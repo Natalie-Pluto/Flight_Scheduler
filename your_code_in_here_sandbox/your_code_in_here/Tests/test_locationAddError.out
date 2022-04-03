@@ -1,0 +1,27 @@
+User: Successfully added location Berlin.
+
+User: Successfully added location NewYork.
+
+User: This location already exists.
+
+User: Invalid latitude. It must be a number of degrees between -85 and +85.
+
+User: Invalid longitude. It must be a number of degrees between -180 and +180.
+
+User: Invalid demand coefficient. It must be a number between -1 and +1.
+
+User: Usage:   LOCATION ADD <name> <lat> <long> <demand_coefficient>
+Example: LOCATION ADD Sydney -33.847927 150.651786 0.2
+
+User: Usage:   LOCATION ADD <name> <lat> <long> <demand_coefficient>
+Example: LOCATION ADD Sydney -33.847927 150.651786 0.2
+
+User: Usage:   LOCATION ADD <name> <lat> <long> <demand_coefficient>
+Example: LOCATION ADD Sydney -33.847927 150.651786 0.2
+
+User: Usage:   LOCATION ADD <name> <lat> <long> <demand_coefficient>
+Example: LOCATION ADD Sydney -33.847927 150.651786 0.2
+
+User: Successfully added location Mumbai.
+
+User: Application closed.

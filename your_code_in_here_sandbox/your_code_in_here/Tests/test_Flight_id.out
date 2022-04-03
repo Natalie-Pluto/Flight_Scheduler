@@ -1,0 +1,44 @@
+User: Usage:
+FLIGHT <id> [BOOK/REMOVE/RESET] [num]
+FLIGHT ADD <departure time> <from> <to> <capacity>
+FLIGHT IMPORT/EXPORT <filename>
+
+User: Invalid Flight ID.
+
+User: Invalid Flight ID.
+
+User: Successfully added location Berlin.
+
+User: Successfully added location NewYork.
+
+User: Successfully added Flight 0.
+
+User: Successfully added Flight 1.
+
+User: Flight 0
+Departure:    Sun 20:00 Berlin
+Arrival:      Mon 04:52 NewYork
+Distance:     6,387km
+Duration:     8h 52m
+Ticket Cost:  $1636.01
+Passengers:   0/250
+
+User: Flight 1
+Departure:    Mon 20:00 Berlin
+Arrival:      Tue 04:52 NewYork
+Distance:     6,387km
+Duration:     8h 52m
+Ticket Cost:  $1636.01
+Passengers:   0/250
+
+User: Flight 1
+Departure:    Mon 20:00 Berlin
+Arrival:      Tue 04:52 NewYork
+Distance:     6,387km
+Duration:     8h 52m
+Ticket Cost:  $1636.01
+Passengers:   0/250
+
+User: Invalid Flight ID.
+
+User: Application closed.

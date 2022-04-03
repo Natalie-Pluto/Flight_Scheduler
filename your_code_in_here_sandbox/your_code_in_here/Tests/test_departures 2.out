@@ -1,0 +1,30 @@
+User: Invalid command. Type 'help' for a list of commands.
+
+User: Usage:
+DEPARTURES <location_name>
+
+User: This location does not exist in the system.
+
+User: Successfully added location Berlin.
+
+User: Successfully added location NewYork.
+
+User: Successfully added Flight 0.
+
+User: Successfully added Flight 1.
+ 
+User: Berlin
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+   0 Sun 20:00   Departure to NewYork
+
+User: Successfully added location Mumbai.
+
+User: Mumbai
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+
+User: Application closed.
+

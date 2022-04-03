@@ -1,0 +1,11 @@
+location 
+location export
+location export location1.csv
+location export balabalaba
+location add Berlin 52.5 13.15 0.22222
+location export location2.csv
+location add NewYork 40.7 -74.26 -0.874
+location export location3.csv
+location import locations.csv
+location export location3.csv
+exit

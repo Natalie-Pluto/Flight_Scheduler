@@ -1,0 +1,14 @@
+location import locations.csv
+flight add wednesday 6:00 sydney perth 180
+flight add wednesday 8:00 sydney perth 180
+flight add wednesday 11:31 perth johannesburg 230
+flights
+flight
+flight reset
+flight -1 reset
+flight 5 reset
+flight 0 reset
+flight 0
+flight 1 reset
+flight 1
+exit

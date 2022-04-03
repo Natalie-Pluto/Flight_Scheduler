@@ -1,0 +1,31 @@
+User: Usage:
+ARRIVALS <location_name>
+
+User: This location does not exist in the system.
+
+User: Invalid command. Type 'help' for a list of commands.
+
+User: This location does not exist in the system.
+
+User: Successfully added location Berlin.
+
+User: Successfully added location NewYork.
+
+User: Successfully added Flight 0.
+
+User: Successfully added Flight 1.
+
+User: Berlin
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+   1 Wed 04:52   Arrival from NewYork
+
+User: Successfully added location Mumbai.
+
+User: Mumbai
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+
+User: Application closed.

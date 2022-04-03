@@ -1,0 +1,24 @@
+User: Imported 51 locations.
+
+User: Successfully added Flight 0.
+
+User: Successfully added Flight 1.
+
+User: Successfully added Flight 2.
+
+User: Scheduling conflict! This flight clashes with Flight 1 departing from Sydney on Wednesday 08:01.
+
+User: Scheduling conflict! This flight clashes with Flight 2 departing from Sydney on Wednesday 07:00.
+
+User: Successfully added Flight 3.
+
+User: Booked 180 passengers on flight 0 for a total cost of $169297.60
+Flight is now full.
+
+User: Booked 180 passengers on flight 1 for a total cost of $169297.60
+Flight is now full.
+
+User: Booked 0 passengers on flight 0 for a total cost of $0.00
+Flight is now full.
+
+User: Application closed.

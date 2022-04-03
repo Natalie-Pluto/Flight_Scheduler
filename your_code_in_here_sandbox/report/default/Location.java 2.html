@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Location.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Coverage Report</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Location.java</span></div><h1>Location.java</h1><pre class="source lang-java linenums">import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.lang.*;
+import java.util.Locale;
+
+public class Location {
+    private String location_name;
+    private double latitude;
+    private double longitude;
+    private ArrayList&lt;Flight&gt; arriving_f;
+    private ArrayList&lt;Flight&gt; departing_f;
+    private double demand_coe;
+
+    // Create a constructor
+<span class="fc" id="L15">    public Location(String name, double latitude, double longitude, double demand) {</span>
+<span class="fc" id="L16">        this.location_name = name;</span>
+<span class="fc" id="L17">        this.latitude = latitude;</span>
+<span class="fc" id="L18">        this.longitude = longitude;</span>
+<span class="fc" id="L19">        this.arriving_f = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L20">        this.departing_f = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L21">        this.demand_coe = demand;</span>
+<span class="fc" id="L22">    }</span>
+
+    // To check if location's latitide is within the valid range [-85,85]
+    public static boolean is_Valid_lat(String latitude) {
+<span class="fc" id="L26">        boolean is_valid = true;</span>
+        try {
+<span class="fc" id="L28">            double num = Double.parseDouble(latitude);</span>
+<span class="nc" id="L29">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L30">            return false;</span>
+<span class="fc" id="L31">        }</span>
+<span class="fc bfc" id="L32" title="All 4 branches covered.">        if (Double.parseDouble(latitude) &lt; -85 || Double.parseDouble(latitude) &gt; 85) {</span>
+<span class="fc" id="L33">            is_valid = false;</span>
+        }
+<span class="fc" id="L35">        return is_valid;</span>
+    }
+
+    // To check if location's longitude is within the valid range [-180, 180]
+    public static boolean is_Valid_lon(String longitude) {
+<span class="fc" id="L40">        boolean is_valid = true;</span>
+        try {
+<span class="fc" id="L42">            double num = Double.parseDouble(longitude);</span>
+<span class="nc" id="L43">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L44">            return false;</span>
+<span class="fc" id="L45">        }</span>
+<span class="pc bpc" id="L46" title="1 of 4 branches missed.">        if (Double.parseDouble(longitude) &lt; -180 || Double.parseDouble(longitude) &gt; 180) {</span>
+<span class="fc" id="L47">            is_valid = false;</span>
+        }
+<span class="fc" id="L49">        return is_valid;</span>
+    }
+
+    // To check if the demand coe is within the valid range [-1, 1]
+    public static boolean is_Valid_coe(String demand_coe) {
+<span class="fc" id="L54">        boolean is_valid = true;</span>
+        try {
+<span class="fc" id="L56">            double num = Double.parseDouble(demand_coe);</span>
+<span class="fc" id="L57">        } catch (NumberFormatException e) {</span>
+<span class="fc" id="L58">            return false;</span>
+<span class="fc" id="L59">        }</span>
+<span class="pc bpc" id="L60" title="1 of 4 branches missed.">        if (Double.parseDouble(demand_coe) &lt; -1 || Double.parseDouble(demand_coe) &gt; 1) {</span>
+<span class="fc" id="L61">            is_valid = false;</span>
+        }
+<span class="fc" id="L63">        return is_valid;</span>
+    }
+
+    //Implement the Haversine formula - return value in kilometres
+    public static double distance(Location l1, Location l2) {
+        // The method is referenced from the website &quot;IGISMAP&quot;
+        // https://www.igismap.com/haversine-formula-calculate-geographic-distance-earth/
+<span class="fc" id="L70">        double Lat1 = l1.latitude;</span>
+<span class="fc" id="L71">        double Lat2 = l2.latitude;</span>
+<span class="fc" id="L72">        double Lon1 = l1.longitude;</span>
+<span class="fc" id="L73">        double Lon2 = l2.longitude;</span>
+        // Earth's radius in km
+<span class="fc" id="L75">        int earth_radius = 6371;</span>
+        // Noticed that angles have to be in radians but given in degrees! Need to convert into radians!
+        // Difference of latitude
+<span class="fc" id="L78">        double diff_lat = Math.toRadians(Lat1 - Lat2);</span>
+        // Difference of longitude
+<span class="fc" id="L80">        double diff_lon = Math.toRadians(Lon1 - Lon2);</span>
+        // Apply Haversine formula:
+<span class="fc" id="L82">        double a = Math.pow(Math.sin(diff_lat/2), 2) + Math.cos(Math.toRadians(Lat1)) * Math.cos(Math.toRadians(Lat2)) *</span>
+<span class="fc" id="L83">                Math.pow(Math.sin(diff_lon/2), 2);</span>
+<span class="fc" id="L84">        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));</span>
+<span class="fc" id="L85">        double distance = earth_radius * c;</span>
+<span class="fc" id="L86">        return distance;</span>
+    }
+
+    public void addArrival(Flight f) {
+<span class="fc" id="L90">        arriving_f.add(f);</span>
+<span class="fc" id="L91">    }</span>
+
+    public void addDeparture(Flight f) {
+<span class="fc" id="L94">        departing_f.add(f);</span>
+<span class="fc" id="L95">    }</span>
+
+    /**
+     * Check to see if Flight f can depart from this location.
+     * If there is a clash, the clashing flight string is returned, otherwise null is returned.
+     * A conflict is determined by if any other flights are arriving or departing at this location within an hour of this flight's departure time.
+     * @param f The flight to check.
+     * @return &quot;Flight &lt;id&gt; [departing/arriving] from &lt;name&gt; on &lt;clashingFlightTime&gt;&quot;. Return null if there is no clash.
+     */
+    public String hasRunwayDepartureSpace(Flight f) {
+        // To check if there are multiple conflicts
+<span class="fc" id="L106">        ArrayList &lt;Flight&gt; dep_conflicts = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L107">        ArrayList &lt;Flight&gt; arr_conflicts = new ArrayList&lt;&gt;();</span>
+        //Check departures first
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if(departing_f != null) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            for (Flight flight : departing_f) {</span>
+                // If there is a clashing flight departing within an hour of this flight’s departure time
+<span class="fc bfc" id="L112" title="All 2 branches covered.">                if (Flight.time_between(f.getDep_local_time(), flight.getDep_local_time(),</span>
+<span class="fc" id="L113">                        f.getDep_dayofWeek(), flight.getDep_dayofWeek()) &lt; 60) {</span>
+<span class="fc" id="L114">                    dep_conflicts.add(flight);</span>
+                }
+<span class="fc" id="L116">            }</span>
+        }
+        //Then check arrivals
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        if(arriving_f != null) {</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">            for (Flight flight : arriving_f) {</span>
+                // If there is a clashing flight arriving within an hour of this flight’s departure time
+<span class="fc bfc" id="L122" title="All 2 branches covered.">                if (Flight.time_between(f.getDep_local_time(), Flight.arrival_l_time(flight),</span>
+<span class="fc" id="L123">                        f.getDep_dayofWeek(), Flight.arrival_day_week(flight)) &lt; 60) {</span>
+<span class="fc" id="L124">                    arr_conflicts.add(flight);</span>
+                }
+<span class="fc" id="L126">            }</span>
+        }
+        // Now, return the warning message.
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        if(conflictKing(dep_conflicts, arr_conflicts) != null) {</span>
+<span class="fc" id="L130">            return conflictKing(dep_conflicts, arr_conflicts);</span>
+        }
+        // If this location's schedule is empty
+<span class="pc bpc" id="L133" title="3 of 4 branches missed.">        if(arriving_f == null &amp;&amp; departing_f == null) {</span>
+<span class="nc" id="L134">            addDeparture(f);</span>
+<span class="nc" id="L135">            return null;</span>
+        }
+        // If no conflicts
+<span class="fc" id="L138">        addDeparture(f);</span>
+<span class="fc" id="L139">        return null;</span>
+    }
+
+    /**
+     * Check to see if Flight f can arrive at this location.
+     * A conflict is determined by if any other flights are arriving or departing at this location within an hour of this flight's arrival time.
+     * @param f The flight to check.
+     * @return String representing the clashing flight, or null if there is no clash. Eg. &quot;Flight &lt;id&gt; [departing/arriving] from &lt;name&gt; on &lt;clashingFlightTime&gt;&quot;
+     */
+    public String hasRunwayArrivalSpace(Flight f) {
+        // To check if there are multiple conflicts
+<span class="fc" id="L150">        ArrayList &lt;Flight&gt; dep_conflicts1 = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L151">        ArrayList &lt;Flight&gt; arr_conflicts1 = new ArrayList&lt;&gt;();</span>
+        //Check departures first
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if(departing_f != null) {</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            for (Flight flight : departing_f) {</span>
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">                if (Flight.time_between(Flight.arrival_l_time(f), flight.getDep_local_time(),</span>
+<span class="fc" id="L156">                        Flight.arrival_day_week(f), flight.getDep_dayofWeek()) &lt; 60) {</span>
+<span class="nc" id="L157">                    dep_conflicts1.add(flight);</span>
+                }
+<span class="fc" id="L159">            }</span>
+        }
+        //Then check arrivals
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        if(arriving_f != null) {</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            for (Flight flight : arriving_f) {</span>
+                // If there is a clashing flight arriving within an hour of this flight’s arriving time
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">                if (Flight.time_between(Flight.arrival_l_time(f), Flight.arrival_l_time(flight),</span>
+<span class="fc" id="L166">                        Flight.arrival_day_week(f), Flight.arrival_day_week(flight)) &lt; 60){</span>
+<span class="nc" id="L167">                    arr_conflicts1.add(flight);</span>
+                }
+<span class="fc" id="L169">            }</span>
+        }
+        // Return the warning message.
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        if(conflictKing(dep_conflicts1, arr_conflicts1) != null) {</span>
+<span class="nc" id="L173">            return conflictKing(dep_conflicts1, arr_conflicts1);</span>
+        }
+        // If this location's schedule is empty
+<span class="pc bpc" id="L176" title="3 of 4 branches missed.">        if(arriving_f == null &amp;&amp; departing_f == null) {</span>
+<span class="nc" id="L177">            addArrival(f);</span>
+<span class="nc" id="L178">            return null;</span>
+        }
+        // If no conflicts
+<span class="fc" id="L181">        addArrival(f);</span>
+<span class="fc" id="L182">        return null;</span>
+    }
+
+    public static String conflictKing(ArrayList&lt;Flight&gt; dep_conflicts, ArrayList&lt;Flight&gt; arr_conflicts) {
+        // First check if the array lists is empty
+<span class="fc" id="L187">        boolean dep_empty = dep_conflicts.isEmpty();</span>
+<span class="fc" id="L188">        boolean arr_empty = arr_conflicts.isEmpty();</span>
+        Flight conflict_winner_dep;
+        Flight conflict_winner_arr;
+        // if there are multiple conflicts for both departure and arrival... Noooooo T_T
+<span class="fc bfc" id="L192" title="All 4 branches covered.">        if (!dep_empty &amp;&amp; !arr_empty) {</span>
+<span class="fc" id="L193">            conflict_winner_dep = dep_conflicts.get(0);</span>
+<span class="fc" id="L194">            conflict_winner_arr = arr_conflicts.get(0);</span>
+<span class="fc" id="L195">            int winner = conflict_winner_dep.getDep_local_time().compareTo(Flight.arrival_l_time(conflict_winner_arr));</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">            if(winner &gt; 0) {</span>
+<span class="nc" id="L197">                return &quot;Scheduling conflict! This flight clashes with Flight&quot; + &quot; &quot; + conflict_winner_dep.getFlight_id()</span>
+<span class="nc" id="L198">                        + &quot; &quot; + &quot;departing from&quot; + &quot; &quot; + conflict_winner_dep.getDep_location().location_name + &quot; &quot; + &quot;on&quot; + &quot; &quot;</span>
+<span class="nc" id="L199">                        + conflict_winner_dep.getDep_dayofWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()) + &quot; &quot; +</span>
+<span class="nc" id="L200">                        conflict_winner_dep.getDep_local_time().toString() + &quot;.&quot;;</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">            } else if (winner &lt; 0) {</span>
+<span class="fc" id="L202">                return &quot;Scheduling conflict! This flight clashes with Flight&quot; + &quot; &quot; + conflict_winner_arr.getFlight_id()</span>
+<span class="fc" id="L203">                        + &quot; &quot; + &quot;arriving at&quot; + &quot; &quot; + conflict_winner_arr.getArr_location().location_name + &quot; &quot; + &quot;on&quot; + &quot; &quot;</span>
+<span class="fc" id="L204">                        + Flight.arrival_day_week(conflict_winner_arr).getDisplayName(TextStyle.FULL, Locale.getDefault()) + &quot; &quot; +</span>
+<span class="fc" id="L205">                        Flight.arrival_l_time(conflict_winner_arr).toString() + &quot;.&quot;;</span>
+            }
+        }
+        // If there are multiple conflicts only for departure flight
+<span class="pc bpc" id="L209" title="1 of 4 branches missed.">        if(!dep_empty &amp;&amp; arr_empty) {</span>
+<span class="fc" id="L210">            conflict_winner_dep = dep_conflicts.get(0);</span>
+            // Find the latest one in departure flight list
+<span class="fc bfc" id="L212" title="All 2 branches covered.">            if(dep_conflicts.size() &gt; 1) {</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">                for (int i = 1; i &lt; dep_conflicts.size(); i++) {</span>
+<span class="fc" id="L214">                    int value = conflict_winner_dep.getDep_local_time().compareTo(dep_conflicts.get(i).getDep_local_time());</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">                    if(value &lt; 0)  {</span>
+<span class="fc" id="L216">                        conflict_winner_dep = dep_conflicts.get(i);</span>
+                    }
+                }
+            }
+<span class="fc" id="L220">            return &quot;Scheduling conflict! This flight clashes with Flight&quot; + &quot; &quot; + conflict_winner_dep.getFlight_id()</span>
+<span class="fc" id="L221">                    + &quot; &quot; + &quot;departing from &quot; + conflict_winner_dep.getDep_location().location_name + &quot; &quot; + &quot;on&quot; + &quot; &quot;</span>
+<span class="fc" id="L222">                    + conflict_winner_dep.getDep_dayofWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()) + &quot; &quot; +</span>
+<span class="fc" id="L223">                    conflict_winner_dep.getDep_local_time().toString() + &quot;.&quot;;</span>
+        }
+
+        // If there are multiple conflicts only for arrival flight
+<span class="pc bpc" id="L227" title="1 of 4 branches missed.">        if(dep_empty &amp;&amp; !arr_empty) {</span>
+<span class="fc" id="L228">            conflict_winner_arr = arr_conflicts.get(0);</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">            if(arr_conflicts.size() &gt; 1) {</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">                for (int j = 1; j &lt; arr_conflicts.size(); j++) {</span>
+<span class="nc" id="L231">                    int valuee = Flight.arrival_l_time(conflict_winner_arr).compareTo(Flight.arrival_l_time(arr_conflicts.get(j)));</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">                    if(valuee &lt; 0)  {</span>
+<span class="nc" id="L233">                        conflict_winner_arr = arr_conflicts.get(j);</span>
+                    }
+                }
+            }
+<span class="fc" id="L237">            return &quot;Scheduling conflict! This flight clashes with Flight&quot; + &quot; &quot; + conflict_winner_arr.getFlight_id()</span>
+<span class="fc" id="L238">                    + &quot; &quot; + &quot;arriving at &quot; + conflict_winner_arr.getArr_location().location_name + &quot; &quot; + &quot;on&quot; + &quot; &quot;</span>
+<span class="fc" id="L239">                    + Flight.arrival_day_week(conflict_winner_arr).getDisplayName(TextStyle.FULL, Locale.getDefault()) + &quot; &quot; +</span>
+<span class="fc" id="L240">                    Flight.arrival_l_time(conflict_winner_arr).toString() + &quot;.&quot;;</span>
+        }
+        // If there's no conflicts (shame...)
+<span class="fc" id="L243">        return null;</span>
+    }
+
+    // toString method for export
+    public String location_toString() {
+<span class="fc" id="L248">        return location_name + &quot;,&quot; + latitude + &quot;,&quot; + longitude + &quot;,&quot; + demand_coe + &quot;\n&quot;;</span>
+    }
+    // The following are the setters &amp; getters for private attributes :)
+
+    // Get location's latitude
+    public double getLatitude() {
+
+<span class="fc" id="L255">        return latitude;</span>
+    }
+
+    // Get location's longitude
+    public double getLongitude() {
+
+<span class="fc" id="L261">        return longitude;</span>
+    }
+
+    // Get location name
+    public String getLocation_name() {
+
+<span class="fc" id="L267">        return location_name;</span>
+    }
+
+    // Get demand coe
+    public double getDemand_coe() {
+
+<span class="fc" id="L273">        return demand_coe;</span>
+    }
+
+    // Get departing flight list
+    public ArrayList&lt;Flight&gt; getDeparting_f() {
+
+<span class="fc" id="L279">        return departing_f;</span>
+    }
+
+    // Get arriving flight list
+    public ArrayList&lt;Flight&gt; getArriving_f() {
+
+<span class="fc" id="L285">        return arriving_f;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

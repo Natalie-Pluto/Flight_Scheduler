@@ -1,0 +1,8 @@
+location import cat.csv
+location
+location 0 import
+location import
+location import locations
+location import locations.csv
+location import locations.csv
+exit

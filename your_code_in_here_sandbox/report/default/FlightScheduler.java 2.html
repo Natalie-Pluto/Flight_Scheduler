@@ -1,0 +1,1494 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FlightScheduler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Coverage Report</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">FlightScheduler.java</span></div><h1>FlightScheduler.java</h1><pre class="source lang-java linenums">import java.text.DecimalFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.time.format.TextStyle;
+import java.util.*;
+import java.io.*;
+import java.time.*;
+import java.io.File;
+import java.io.IOException;
+
+<span class="pc bpc" id="L12" title="1 of 2 branches missed.">public class FlightScheduler {</span>
+    private ArrayList&lt;Flight&gt; list_of_flights;
+    private ArrayList&lt;Location&gt; list_of_locations;
+<span class="fc" id="L15">    private int id_counter = 0;</span>
+
+    private static FlightScheduler instance;
+
+    public static void main(String[] args) {
+<span class="fc" id="L20">        instance = new FlightScheduler(args);</span>
+<span class="fc" id="L21">        instance.run();</span>
+<span class="fc" id="L22">    }</span>
+
+    public static FlightScheduler getInstance() {
+
+<span class="nc" id="L26">        return instance;</span>
+    }
+
+<span class="fc" id="L29">    public FlightScheduler(String[] args) {</span>
+<span class="fc" id="L30">        this.list_of_flights = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L31">        this.list_of_locations = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L32">    }</span>
+
+    public void run() {
+        // Do not use System.exit() anywhere in your code,
+        // otherwise it will also exit the auto test suite.
+        // Also, do not use static attributes otherwise
+        // they will maintain the same values between testcases.
+
+        // Keep getting input until end is equal to 1.
+<span class="fc" id="L41">        int end = 0;</span>
+<span class="fc" id="L42">        Scanner user_input = new Scanner(System.in);</span>
+<span class="fc" id="L43">        System.out.print(&quot;User: &quot;);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        while (end != 1) {</span>
+            // Store inputs as strings into an array
+            // Separate the inputs by spaces :)
+            // Get user's input...
+<span class="fc" id="L48">            String[] input = user_input.nextLine().split(&quot; &quot;);</span>
+            // If nothing is entered at all, print the error message
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">            if (input.length &lt;= 0) {</span>
+<span class="nc" id="L51">                System.out.println(&quot;Invalid command. Type 'help' for a list of commands.&quot;);</span>
+            }
+            // Use switch and case to distinguish the commands
+            // First determine if it's FLIGHT LOCATION TRAVEL etc commands
+            // Separate out the first index...
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">            if (input.length &gt; 0) {</span>
+<span class="fc bfc" id="L57" title="All 11 branches covered.">                switch (input[0].toUpperCase()) {</span>
+                    // FLIGHTS command: list all available flights ordered by departure time, then departure location name
+                    case (&quot;FLIGHTS&quot;):
+                        // Sort the flights ordered by departure time, then departure location name
+<span class="fc" id="L61">                        ArrayList&lt;Flight&gt; sorted_list = sorted(list_of_flights);</span>
+                        // Print the flight list
+<span class="fc" id="L63">                        System.out.println(&quot;Flights&quot;);</span>
+<span class="fc" id="L64">                        System.out.println(&quot;-------------------------------------------------------&quot;);</span>
+<span class="fc" id="L65">                        System.out.println(&quot;ID   Departure   Arrival     Source --&gt; Destination&quot;);</span>
+<span class="fc" id="L66">                        System.out.println(&quot;-------------------------------------------------------&quot;);</span>
+                        // No flights are available
+<span class="fc bfc" id="L68" title="All 2 branches covered.">                        if (list_of_flights.isEmpty()) {</span>
+<span class="fc" id="L69">                            System.out.println(&quot;(None)&quot;);</span>
+                        }
+<span class="fc bfc" id="L71" title="All 2 branches covered.">                        for (Flight flight : sorted_list) {</span>
+<span class="fc" id="L72">                            String dep_day = flight.getDep_dayofWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());</span>
+                            // Departure time
+<span class="fc" id="L74">                            String dep_time = flight.getDep_local_time().toString();</span>
+                            // Arrival day
+<span class="fc" id="L76">                            String arr_day = Flight.arrival_day_week(flight).getDisplayName(TextStyle.SHORT, Locale.getDefault());</span>
+                            // Arrival time
+<span class="fc" id="L78">                            String arr_time = Flight.arrival_l_time(flight).toString();</span>
+<span class="fc" id="L79">                            System.out.printf(&quot;%4d %s %s   %s %s   %s --&gt; %s\n&quot;, flight.getFlight_id(),</span>
+<span class="fc" id="L80">                                    dep_day, dep_time, arr_day, arr_time, flight.getDep_location().getLocation_name(),</span>
+<span class="fc" id="L81">                                    flight.getArr_location().getLocation_name());</span>
+<span class="fc" id="L82">                        }</span>
+<span class="fc" id="L83">                        break;</span>
+                    case (&quot;FLIGHT&quot;):
+                        // Error checking: no parameters given
+<span class="fc bfc" id="L86" title="All 2 branches covered.">                        if (input.length == 1) {</span>
+<span class="fc" id="L87">                            System.out.println(&quot;Usage:\nFLIGHT &lt;id&gt; [BOOK/REMOVE/RESET] [num]\n&quot; +</span>
+                                    &quot;FLIGHT ADD &lt;departure time&gt; &lt;from&gt; &lt;to&gt; &lt;capacity&gt;\nFLIGHT IMPORT/EXPORT &lt;filename&gt;&quot;);
+<span class="fc" id="L89">                            break;</span>
+                        }
+                        // For &quot;ADD', &quot;EXPORT&quot;, &quot;IMPORT&quot;
+<span class="fc bfc" id="L92" title="All 4 branches covered.">                        switch (input[1].toUpperCase()) {</span>
+                            case (&quot;ADD&quot;):
+                                // Check the possible error first
+<span class="fc bfc" id="L95" title="All 2 branches covered.">                                if (input.length &gt;= 7) {</span>
+                                    // 1) Time added was not in the correct format, for example “Monday 18:00”
+<span class="fc" id="L97">                                    String day = input[2];</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">                                    if (!is_valid_day(day)) {</span>
+<span class="fc" id="L99">                                        System.out.println(&quot;Invalid departure time. Use the format &lt;day_of_week&gt; &quot; +</span>
+                                                &quot;&lt;hour:minute&gt;, with 24h time.&quot;);
+<span class="fc" id="L101">                                        break;</span>
+                                    }
+
+<span class="fc" id="L104">                                    String time = input[3];</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">                                    if (!is_valid_time(time)) {</span>
+<span class="fc" id="L106">                                        System.out.println(&quot;Invalid departure time. Use the format &lt;day_of_week&gt; &quot; +</span>
+                                                &quot;&lt;hour:minute&gt;, with 24h time.&quot;);
+<span class="fc" id="L108">                                        break;</span>
+                                    }
+<span class="fc" id="L110">                                    String dep_location = input[4];</span>
+<span class="fc" id="L111">                                    String arr_location = input[5];</span>
+                                    // 2) Starting location was not in the database but ending location was in the database.
+<span class="fc bfc" id="L113" title="All 2 branches covered.">                                    if (is_location_exist(dep_location, list_of_locations) == null) {</span>
+<span class="fc" id="L114">                                        System.out.println(&quot;Invalid starting location.&quot;);</span>
+<span class="fc" id="L115">                                        break;</span>
+                                    }
+                                    // 3) Ending location was not in the database but starting location was in the database.
+<span class="fc bfc" id="L118" title="All 2 branches covered.">                                    if (is_location_exist(arr_location, list_of_locations) == null) {</span>
+<span class="fc" id="L119">                                        System.out.println(&quot;Invalid ending location.&quot;);</span>
+<span class="fc" id="L120">                                        break;</span>
+                                    }
+                                /* 4) Both Starting &amp; Ending location were not in the database
+                                    ed testcase doesn't like it but I like it so i gonna keep it here &gt;:^/
+                                if (is_location_exist(arr_location, list_of_locations) == null &amp;&amp;
+                                        is_location_exist(dep_location, list_of_locations) == null) {
+                                    System.out.println(&quot;Invalid starting location.&quot;);
+                                    System.out.println(&quot;Invalid ending location.&quot;);
+                                    break;
+                                }*/
+                                    // 5) Capacity was not a positive integer.
+<span class="fc" id="L131">                                    int cap = Integer.parseInt(input[6]);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">                                    if (cap &lt;= 0) {</span>
+<span class="fc" id="L133">                                        System.out.println(&quot;Invalid positive integer capacity.&quot;);</span>
+<span class="fc" id="L134">                                        break;</span>
+                                    }
+
+                                    // 6) The two locations entered were the same
+<span class="fc" id="L138">                                    String l1 = input[4];</span>
+<span class="fc" id="L139">                                    String l2 = input[5];</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">                                    if (l1.equalsIgnoreCase(l2)) {</span>
+<span class="fc" id="L141">                                        System.out.println(&quot;Source and destination cannot be the same place.&quot;);</span>
+<span class="fc" id="L142">                                        break;</span>
+                                    }
+<span class="fc" id="L144">                                    Location dep_l = is_location_exist(dep_location, list_of_locations);</span>
+<span class="fc" id="L145">                                    Location arr_l = is_location_exist(arr_location, list_of_locations);</span>
+<span class="fc" id="L146">                                    Flight newFlight = new Flight(id_counter, input[2] + &quot; &quot; + input[3], dep_l,</span>
+<span class="fc" id="L147">                                            arr_l, Integer.parseInt(input[6]));</span>
+<span class="pc bpc" id="L148" title="2 of 4 branches missed.">                                    if (dep_l != null &amp;&amp; arr_l != null) {</span>
+                                        // 8) No runways are available for this flight at the designated location at that time.
+<span class="fc bfc" id="L150" title="All 2 branches covered.">                                        if (dep_l.hasRunwayDepartureSpace(newFlight) != null) {</span>
+<span class="fc" id="L151">                                            String warning = dep_l.hasRunwayDepartureSpace(newFlight);</span>
+<span class="fc" id="L152">                                            System.out.println(warning);</span>
+<span class="fc" id="L153">                                            break;</span>
+                                        }
+                                        // 9) No runways are available for this flight at the designated location at that time.
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">                                        if (arr_l.hasRunwayArrivalSpace(newFlight) != null) {</span>
+<span class="nc" id="L157">                                            String warning = arr_l.hasRunwayArrivalSpace(newFlight);</span>
+<span class="nc" id="L158">                                            System.out.println(warning);</span>
+<span class="nc" id="L159">                                            break;</span>
+                                        }
+                                    }
+                                    // Now we can add the flight to the list
+<span class="fc" id="L163">                                    list_of_flights.add(newFlight);</span>
+<span class="fc" id="L164">                                    System.out.printf(&quot;Successfully added Flight %d.\n&quot;, newFlight.getFlight_id());</span>
+<span class="fc" id="L165">                                    id_counter = id_counter + 1;</span>
+                                }
+                                // 7) Not enough command arguments given.
+<span class="fc bfc" id="L168" title="All 2 branches covered.">                                if (input.length &lt; 7) {</span>
+<span class="fc" id="L169">                                    System.out.println(&quot;Usage:   FLIGHT ADD &lt;departure time&gt; &lt;from&gt; &lt;to&gt; &lt;capacity&gt;&quot; +</span>
+                                            &quot;\nExample: FLIGHT ADD Monday 18:00 Sydney Melbourne 120&quot;);
+<span class="fc" id="L171">                                    break;</span>
+                                }
+                                break;
+                            case (&quot;IMPORT&quot;):
+<span class="fc" id="L175">                                importFlights(input);</span>
+<span class="fc" id="L176">                                break;</span>
+                            case (&quot;EXPORT&quot;):
+<span class="fc" id="L178">                                exportFlights(input);</span>
+<span class="fc" id="L179">                                break;</span>
+                            // &lt;id&gt; : view information about a flight
+                            default:
+<span class="fc bfc" id="L182" title="All 2 branches covered.">                                if (input.length == 2) {</span>
+                                    // Error checking
+                                    try {
+<span class="fc" id="L185">                                        Integer.parseInt(input[1]);</span>
+<span class="fc" id="L186">                                    } catch (NumberFormatException e) {</span>
+<span class="fc" id="L187">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="fc" id="L188">                                        break;</span>
+<span class="fc" id="L189">                                    }</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">                                    if (!is_id_exist(Integer.parseInt(input[1]), list_of_flights)) {</span>
+<span class="fc" id="L191">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="fc" id="L192">                                        break;</span>
+                                    }
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">                                    if (Integer.parseInt(input[1]) &lt; 0) {</span>
+<span class="nc" id="L195">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="nc" id="L196">                                        break;</span>
+                                    }
+                                    // Print the information
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">                                    for (Flight f : list_of_flights) {</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">                                        if (f.getFlight_id() == Integer.parseInt(input[1])) {</span>
+                                            // Departure day
+<span class="fc" id="L202">                                            String dep_day = f.getDep_dayofWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());</span>
+                                            // Departure time
+<span class="fc" id="L204">                                            String dep_time = f.getDep_local_time().toString();</span>
+                                            // Arrival day
+<span class="fc" id="L206">                                            String arr_day = Flight.arrival_day_week(f).getDisplayName(TextStyle.SHORT, Locale.getDefault());</span>
+                                            // Get duration time
+<span class="fc" id="L208">                                            int duration_time = f.getDuration();</span>
+<span class="fc" id="L209">                                            int hours = duration_time / 60;</span>
+<span class="fc" id="L210">                                            int minuets = duration_time % 60;</span>
+                                            // The method of formatting number is taken from Java67
+                                            // https://www.java67.com/2015/06/how-to-format-numbers-in-java.html#:~:text=
+                                            // In%20order%20to%20print%20numbers,number%20starting%20from%20the%20right.
+<span class="fc" id="L214">                                            DecimalFormat format = new DecimalFormat(&quot;#.##&quot;);</span>
+<span class="fc" id="L215">                                            format.setGroupingUsed(true);</span>
+<span class="fc" id="L216">                                            format.setGroupingSize(3);</span>
+                                            // Arrival time
+<span class="fc" id="L218">                                            String arr_time = Flight.arrival_l_time(f).toString();</span>
+<span class="fc" id="L219">                                            System.out.printf(&quot;Flight %d\n&quot;, Integer.parseInt(input[1]));</span>
+<span class="fc" id="L220">                                            System.out.printf(&quot;Departure:    %s %s %s\n&quot;, dep_day, dep_time,</span>
+<span class="fc" id="L221">                                                    f.getDep_location().getLocation_name());</span>
+<span class="fc" id="L222">                                            System.out.printf(&quot;Arrival:      %s %s %s\n&quot;, arr_day, arr_time,</span>
+<span class="fc" id="L223">                                                    f.getArr_location().getLocation_name());</span>
+<span class="fc" id="L224">                                            System.out.printf(&quot;Distance:     %skm\n&quot;, format.format((int) Math.round(f.getDistance())));</span>
+<span class="fc" id="L225">                                            System.out.printf(&quot;Duration:     %dh %dm\n&quot;, hours, minuets);</span>
+<span class="fc" id="L226">                                            System.out.printf(&quot;Ticket Cost:  $%.2f\n&quot;, f.getTicketPrice());</span>
+<span class="fc" id="L227">                                            System.out.printf(&quot;Passengers:   %d/%d\n&quot;, f.getNum_of_booked(), f.getCapacity());</span>
+<span class="fc" id="L228">                                            break;</span>
+                                        }
+<span class="fc" id="L230">                                    }</span>
+                                }
+                                break;
+                        }
+                        // For the rest of commands followed by ID
+<span class="fc bfc" id="L235" title="All 2 branches covered.">                        if (input.length &gt; 2) {</span>
+<span class="fc bfc" id="L236" title="All 4 branches covered.">                            switch (input[2].toUpperCase()) {</span>
+                                case (&quot;BOOK&quot;):
+                                    // Error checking
+                                    try {
+<span class="fc" id="L240">                                        Integer.parseInt(input[1]);</span>
+<span class="nc" id="L241">                                    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L242">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="nc" id="L243">                                        break;</span>
+<span class="fc" id="L244">                                    }</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">                                    if (!is_id_exist(Integer.parseInt(input[1]), list_of_flights)) {</span>
+<span class="fc" id="L246">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="fc" id="L247">                                        break;</span>
+                                    }
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">                                    if (Integer.parseInt(input[1]) &lt; 0) {</span>
+<span class="nc" id="L250">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="nc" id="L251">                                        break;</span>
+                                    }
+
+                                    // The number of passengers entered was not a valid positive integer.
+<span class="fc bfc" id="L255" title="All 2 branches covered.">                                    if (input.length &gt; 3) {</span>
+                                        try {
+<span class="fc" id="L257">                                            Integer.parseInt(input[3]);</span>
+<span class="fc" id="L258">                                        } catch (NumberFormatException e) {</span>
+<span class="fc" id="L259">                                            System.out.println(&quot;Invalid number of passengers to book.&quot;);</span>
+<span class="fc" id="L260">                                            break;</span>
+<span class="fc" id="L261">                                        }</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">                                        if (Integer.parseInt(input[3]) &lt;= 0) {</span>
+<span class="fc" id="L263">                                            System.out.println(&quot;Invalid number of passengers to book.&quot;);</span>
+<span class="fc" id="L264">                                            break;</span>
+                                        }
+                                    }
+                                    // Given more parameters than needed
+                                    // I guess will have no affection?
+                                    // Let's start booking then!
+                                    // If no number is given, only book one passenger
+<span class="fc" id="L271">                                    int bookings = 1;</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">                                    if (input.length &gt; 3) {</span>
+<span class="fc" id="L273">                                        bookings = Integer.parseInt(input[3]);</span>
+                                    }
+                                    double total_price;
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">                                    for (Flight f : list_of_flights) {</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">                                        if (f.getFlight_id() == Integer.parseInt(input[1])) {</span>
+                                            // Get the remaining seats
+<span class="fc" id="L279">                                            int seats_left = f.getCapacity() - f.getNum_of_booked();</span>
+                                            // If the seats left is less or equal to the booking requirement
+<span class="fc bfc" id="L281" title="All 4 branches covered.">                                            if (bookings &gt;= seats_left &amp;&amp; seats_left != 0) {</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">                                                if (bookings != seats_left) {</span>
+<span class="fc" id="L283">                                                    bookings = seats_left;</span>
+                                                }
+<span class="fc" id="L285">                                                total_price = f.book(bookings);</span>
+<span class="fc" id="L286">                                                System.out.printf(&quot;Booked %d passengers on flight %d for a total cost of $%.2f\n&quot;,</span>
+<span class="fc" id="L287">                                                        bookings, Integer.parseInt(input[1]), total_price);</span>
+<span class="fc" id="L288">                                                System.out.println(&quot;Flight is now full.&quot;);</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">                                            } else if (seats_left &gt; bookings) { // If the seats left is more than the booking requirement</span>
+<span class="fc" id="L290">                                                total_price = f.book(bookings);</span>
+<span class="fc" id="L291">                                                System.out.printf(&quot;Booked %d passengers on flight %d for a total cost of $%.2f\n&quot;,</span>
+<span class="fc" id="L292">                                                        bookings, Integer.parseInt(input[1]), total_price);</span>
+                                            }
+                                            // If there's no remaining seat
+<span class="fc bfc" id="L295" title="All 2 branches covered.">                                            if (seats_left == 0) {</span>
+<span class="fc" id="L296">                                                System.out.printf(&quot;Booked 0 passengers on flight %d for a total cost of $0.00\n&quot;,</span>
+<span class="fc" id="L297">                                                        Integer.parseInt(input[1]));</span>
+<span class="fc" id="L298">                                                System.out.println(&quot;Flight is now full.&quot;);</span>
+                                            }
+                                            break;
+                                        }
+<span class="fc" id="L302">                                    }</span>
+<span class="fc" id="L303">                                    break;</span>
+                                case (&quot;REMOVE&quot;):
+                                    // Error checking
+                                    try {
+<span class="fc" id="L307">                                        Integer.parseInt(input[1]);</span>
+<span class="nc" id="L308">                                    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L309">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="nc" id="L310">                                        break;</span>
+<span class="fc" id="L311">                                    }</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">                                    if (!is_id_exist(Integer.parseInt(input[1]), list_of_flights)) {</span>
+<span class="fc" id="L313">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="fc" id="L314">                                        break;</span>
+                                    }
+
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">                                    if (Integer.parseInt(input[1]) &lt; 0) {</span>
+<span class="nc" id="L318">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="nc" id="L319">                                        break;</span>
+                                    }
+                                    // Find the target flight, remove it and print the message
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">                                    for (Flight f : list_of_flights) {</span>
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">                                        if (f.getFlight_id() == Integer.parseInt(input[1])) {</span>
+                                            // Departure day
+<span class="fc" id="L325">                                            String dep_day = f.getDep_dayofWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());</span>
+                                            // Departure time
+<span class="fc" id="L327">                                            String dep_time = f.getDep_local_time().toString();</span>
+                                            // Print the flight information
+<span class="fc" id="L329">                                            System.out.printf(&quot;Removed Flight %d, %s %s %s --&gt; %s, from the flight schedule.\n&quot;,</span>
+<span class="fc" id="L330">                                                    Integer.parseInt(input[1]), dep_day, dep_time, f.getDep_location().getLocation_name(),</span>
+<span class="fc" id="L331">                                                    f.getArr_location().getLocation_name());</span>
+<span class="fc" id="L332">                                            list_of_flights.remove(f);</span>
+<span class="fc" id="L333">                                            f.getDep_location().getDeparting_f().remove(f);</span>
+<span class="fc" id="L334">                                            f.getArr_location().getArriving_f().remove(f);</span>
+<span class="fc" id="L335">                                            break;</span>
+                                        }
+<span class="nc" id="L337">                                    }</span>
+<span class="fc" id="L338">                                    break;</span>
+
+                                case (&quot;RESET&quot;):
+                                    // Error checking
+                                    try {
+<span class="fc" id="L343">                                        Integer.parseInt(input[1]);</span>
+<span class="nc" id="L344">                                    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L345">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="nc" id="L346">                                        break;</span>
+<span class="fc" id="L347">                                    }</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">                                    if (!is_id_exist(Integer.parseInt(input[1]), list_of_flights)) {</span>
+<span class="fc" id="L349">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="fc" id="L350">                                        break;</span>
+                                    }
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">                                    if (Integer.parseInt(input[1]) &lt; 0) {</span>
+<span class="nc" id="L353">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+<span class="nc" id="L354">                                        break;</span>
+                                    }
+
+                                    // Find the target flight
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">                                    for (Flight f : list_of_flights) {</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">                                        if (f.getFlight_id() == Integer.parseInt(input[1])) {</span>
+<span class="fc" id="L360">                                            f.setNum_of_booked(0);</span>
+<span class="fc" id="L361">                                            f.setTicketPrice(f.getTicketPrice());</span>
+                                            // Departure day
+<span class="fc" id="L363">                                            String dep_day = f.getDep_dayofWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());</span>
+                                            // Departure time
+<span class="fc" id="L365">                                            String dep_time = f.getDep_local_time().toString();</span>
+                                            // Print the flight information
+<span class="fc" id="L367">                                            System.out.printf(&quot;Reset passengers booked to 0 for Flight %d, %s %s %s --&gt; %s.\n&quot;,</span>
+<span class="fc" id="L368">                                                    Integer.parseInt(input[1]), dep_day, dep_time, f.getDep_location().getLocation_name(),</span>
+<span class="fc" id="L369">                                                    f.getArr_location().getLocation_name());</span>
+<span class="fc" id="L370">                                            break;</span>
+                                        }
+<span class="fc" id="L372">                                    }</span>
+<span class="fc" id="L373">                                    break;</span>
+                                default:
+                                    // If user's input is like this: &quot;flight 0 0&quot; hummmm yea
+<span class="fc" id="L376">                                    boolean is_num = true;</span>
+                                    try {
+<span class="fc" id="L378">                                        int num = Integer.parseInt(input[2]);</span>
+<span class="fc" id="L379">                                    } catch (NumberFormatException e) {</span>
+<span class="fc" id="L380">                                        is_num = false;</span>
+<span class="fc" id="L381">                                    }</span>
+<span class="pc bpc" id="L382" title="2 of 6 branches missed.">                                    if (is_num &amp;&amp; !input[1].equalsIgnoreCase(&quot;ADD&quot;) &amp;&amp; !input[1].equalsIgnoreCase(&quot;IMPORT&quot;) &amp;&amp;</span>
+<span class="pc bpc" id="L383" title="2 of 4 branches missed.">                                            !input[1].equalsIgnoreCase(&quot;EXPORT&quot;) &amp;&amp; !input[0].equalsIgnoreCase(&quot;FLIGHTS&quot;)) {</span>
+<span class="fc" id="L384">                                        System.out.println(&quot;Invalid Flight ID.&quot;);</span>
+                                    }
+<span class="fc" id="L386">                                    break;</span>
+                            }
+                        }
+                        break;
+                    case (&quot;LOCATIONS&quot;):
+                        // list all available locations in alphabetical order
+                        // If no locations are available
+<span class="fc bfc" id="L393" title="All 2 branches covered.">                        if (list_of_locations.isEmpty()) {</span>
+<span class="fc" id="L394">                            System.out.println(&quot;Locations (0):&quot;);</span>
+<span class="fc" id="L395">                            System.out.println(&quot;(None)&quot;);</span>
+<span class="fc" id="L396">                            break;</span>
+                        }
+<span class="fc" id="L398">                        ArrayList&lt;Location&gt; sorted_location = sort_locations(list_of_locations);</span>
+<span class="fc" id="L399">                        System.out.printf(&quot;Locations (%d):\n&quot;, sorted_location.size());</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">                        for (int i = 0; i &lt; sorted_location.size() - 1; i++) {</span>
+<span class="fc" id="L401">                            System.out.print(sorted_location.get(i).getLocation_name() + &quot;, &quot;);</span>
+                        }
+<span class="fc" id="L403">                        System.out.println(sorted_location.get(sorted_location.size() - 1).getLocation_name());</span>
+<span class="fc" id="L404">                        break;</span>
+                    case (&quot;LOCATION&quot;):
+                        // No parameters given.
+<span class="fc bfc" id="L407" title="All 2 branches covered.">                        if (input.length == 1) {</span>
+<span class="fc" id="L408">                            System.out.println(&quot;Usage:\nLOCATION &lt;name&gt;\nLOCATION ADD &lt;name&gt; &lt;latitude&gt; &lt;longitude&gt; &lt;demand_coefficient&gt;\n&quot; +</span>
+                                    &quot;LOCATION IMPORT/EXPORT &lt;filename&gt;&quot;);
+<span class="fc" id="L410">                            break;</span>
+                        }
+                        // There are some commends under LOCATION
+<span class="fc bfc" id="L413" title="All 4 branches covered.">                        switch (input[1].toUpperCase()) {</span>
+                            // Add a location
+                            case (&quot;ADD&quot;):
+                                // Error checking
+                                // 1) Not enough command arguments given
+<span class="fc bfc" id="L418" title="All 2 branches covered.">                                if (input.length &lt; 6) {</span>
+<span class="fc" id="L419">                                    System.out.println(&quot;Usage:   LOCATION ADD &lt;name&gt; &lt;lat&gt; &lt;long&gt; &lt;demand_coefficient&gt;\n&quot; +</span>
+                                            &quot;Example: LOCATION ADD Sydney -33.847927 150.651786 0.2&quot;);
+<span class="fc" id="L421">                                    break;</span>
+                                }
+                                // 2) Location is already present in the database (case insensitive based on name)
+<span class="fc bfc" id="L424" title="All 2 branches covered.">                                if (locationExist(input[2], list_of_locations)) {</span>
+<span class="fc" id="L425">                                    System.out.println(&quot;This location already exists.&quot;);</span>
+<span class="fc" id="L426">                                    break;</span>
+                                }
+                                // 3) Latitude exceeds bounds or is an invalid number
+<span class="fc bfc" id="L429" title="All 2 branches covered.">                                if (!Location.is_Valid_lat(input[3])) {</span>
+<span class="fc" id="L430">                                    System.out.println(&quot;Invalid latitude. It must be a number of degrees between -85 and +85.&quot;);</span>
+<span class="fc" id="L431">                                    break;</span>
+                                }
+                                // 4) Longitude exceeds bounds or is an invalid number
+<span class="fc bfc" id="L434" title="All 2 branches covered.">                                if (!Location.is_Valid_lon(input[4])) {</span>
+<span class="fc" id="L435">                                    System.out.println(&quot;Invalid longitude. It must be a number of degrees between -180 and +180.&quot;);</span>
+<span class="fc" id="L436">                                    break;</span>
+                                }
+                                // 5) Demand coefficient exceeds bounds or is an invalid number.
+<span class="fc bfc" id="L439" title="All 2 branches covered.">                                if (!Location.is_Valid_coe(input[5])) {</span>
+<span class="fc" id="L440">                                    System.out.println(&quot;Invalid demand coefficient. It must be a number between -1 and +1.&quot;);</span>
+<span class="fc" id="L441">                                    break;</span>
+                                }
+                                // If no errors, we can add this location to the database
+<span class="fc" id="L444">                                Location newLocation = new Location(input[2], Double.parseDouble(input[3]), Double.parseDouble(input[4]),</span>
+<span class="fc" id="L445">                                        Double.parseDouble(input[5]));</span>
+<span class="fc" id="L446">                                list_of_locations.add(newLocation);</span>
+<span class="fc" id="L447">                                System.out.printf(&quot;Successfully added location %s.\n&quot;, input[2]);</span>
+<span class="fc" id="L448">                                break;</span>
+                            // Import locations to csv file
+                            case (&quot;IMPORT&quot;):
+<span class="fc" id="L451">                                importLocations(input);</span>
+<span class="fc" id="L452">                                break;</span>
+                            // Export locations to csv file
+                            case (&quot;EXPORT&quot;):
+<span class="fc" id="L455">                                exportLocations(input);</span>
+<span class="fc" id="L456">                                break;</span>
+                            // View details about a location (it’s name, coordinates, demand coefficient)
+                            default:
+                                // Checking error
+                                // Location is not present in the database (case insensitive based on name)
+<span class="fc bfc" id="L461" title="All 2 branches covered.">                                if (!locationExist(input[1], list_of_locations)) {</span>
+<span class="fc" id="L462">                                    System.out.println(&quot;Invalid location name.&quot;);</span>
+<span class="fc" id="L463">                                    break;</span>
+                                }
+                                // Print the location list
+<span class="fc" id="L466">                                Location location = is_location_exist(input[1], list_of_locations);</span>
+<span class="fc" id="L467">                                System.out.printf(&quot;Location:    %s\n&quot;, location.getLocation_name());</span>
+<span class="fc" id="L468">                                System.out.printf(&quot;Latitude:    %f\n&quot;, location.getLatitude());</span>
+<span class="fc" id="L469">                                System.out.printf(&quot;Longitude:   %f\n&quot;, location.getLongitude());</span>
+<span class="fc bfc" id="L470" title="All 2 branches covered.">                                if (location.getDemand_coe() &gt;= 0) {</span>
+<span class="fc" id="L471">                                    System.out.printf(&quot;Demand:      +%.4f\n&quot;, location.getDemand_coe());</span>
+                                } else {
+<span class="fc" id="L473">                                    System.out.printf(&quot;Demand:      %.4f\n&quot;, location.getDemand_coe());</span>
+                                }
+                                break;
+                        }
+<span class="fc" id="L477">                        break;</span>
+                    // list all departing and arriving flights, in order of the time they arrive/depart
+                    case (&quot;SCHEDULE&quot;):
+                        // Error checking
+                        // 1) No parameters given.
+<span class="fc bfc" id="L482" title="All 2 branches covered.">                        if (input.length == 1) {</span>
+<span class="fc" id="L483">                            System.out.println(&quot;Usage:\nSCHEDULE &lt;location_name&gt;&quot;);</span>
+<span class="fc" id="L484">                            break;</span>
+                        }
+                        // 2) Location is not present in the database (case insensitive based on name)
+<span class="fc bfc" id="L487" title="All 2 branches covered.">                        if (is_location_exist(input[1], list_of_locations) == null) {</span>
+<span class="fc" id="L488">                            System.out.println(&quot;This location does not exist in the system.&quot;);</span>
+<span class="fc" id="L489">                            break;</span>
+                        }
+<span class="fc" id="L491">                        Location l = is_location_exist(input[1], list_of_locations);// Store the departing flight in this location</span>
+<span class="fc" id="L492">                        ArrayList&lt;Flight&gt; schedule = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L493" title="3 of 4 branches missed.">                        assert l != null;</span>
+<span class="fc" id="L494">                        schedule.addAll(l.getDeparting_f());</span>
+<span class="fc" id="L495">                        schedule.addAll(l.getArriving_f());</span>
+
+                        // Sort the flight schedule
+<span class="fc" id="L498">                        ArrayList&lt;Flight&gt; newSchedule = sort_flights(schedule, l);</span>
+                        // Print the flight schedule
+<span class="fc" id="L500">                        System.out.printf(&quot;%s\n&quot;, l.getLocation_name());</span>
+<span class="fc" id="L501">                        System.out.println(&quot;-------------------------------------------------------&quot;);</span>
+<span class="fc" id="L502">                        System.out.println(&quot;ID   Time        Departure/Arrival to/from Location&quot;);</span>
+<span class="fc" id="L503">                        System.out.println(&quot;-------------------------------------------------------&quot;);</span>
+
+<span class="fc bfc" id="L505" title="All 2 branches covered.">                        for (Flight f : newSchedule) {</span>
+<span class="fc" id="L506">                            String dep_day = f.getDep_dayofWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());</span>
+<span class="fc" id="L507">                            String arr_day = Flight.arrival_day_week(f).getDisplayName(TextStyle.SHORT, Locale.getDefault());</span>
+<span class="fc" id="L508">                            String dep_time = f.getDep_local_time().toString();</span>
+<span class="fc" id="L509">                            String arr_time = Flight.arrival_l_time(f).toString();</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">                            if (f.getDep_location() == l) {</span>
+<span class="fc" id="L511">                                System.out.printf(&quot;%4d %s %s   Departure to %s\n&quot;, f.getFlight_id(), dep_day, dep_time,</span>
+<span class="fc" id="L512">                                        f.getArr_location().getLocation_name());</span>
+                            }
+<span class="fc bfc" id="L514" title="All 2 branches covered.">                            if (f.getArr_location() == l) {</span>
+<span class="fc" id="L515">                                System.out.printf(&quot;%4d %s %s   Arrival from %s\n&quot;, f.getFlight_id(), arr_day, arr_time,</span>
+<span class="fc" id="L516">                                        f.getDep_location().getLocation_name());</span>
+                            }
+<span class="fc" id="L518">                        }</span>
+<span class="fc" id="L519">                        break;</span>
+                    case (&quot;DEPARTURES&quot;):
+                        // Error checking
+                        // 1) No parameters given.
+<span class="fc bfc" id="L523" title="All 2 branches covered.">                        if (input.length == 1) {</span>
+<span class="fc" id="L524">                            System.out.println(&quot;Usage:\nDEPARTURES &lt;location_name&gt;&quot;);</span>
+<span class="fc" id="L525">                            break;</span>
+                        }
+                        // 2) Location is not present in the database (case insensitive based on name)
+<span class="fc bfc" id="L528" title="All 2 branches covered.">                        if (is_location_exist(input[1], list_of_locations) == null) {</span>
+<span class="fc" id="L529">                            System.out.println(&quot;This location does not exist in the system.&quot;);</span>
+<span class="fc" id="L530">                            break;</span>
+                        }
+                        // Store the departing flight in this location
+<span class="fc" id="L533">                        Location ll = is_location_exist(input[1], list_of_locations);</span>
+<span class="pc bpc" id="L534" title="3 of 4 branches missed.">                        assert ll != null;</span>
+<span class="fc" id="L535">                        ArrayList&lt;Flight&gt; dep_schedule = new ArrayList&lt;&gt;(ll.getDeparting_f());</span>
+                        // Sort all departing flights, in order of departure time
+<span class="fc" id="L537">                        ArrayList&lt;Flight&gt; sorted_dep_schedule = sort_dep(dep_schedule);</span>
+                        // Print the flight schedule
+<span class="fc" id="L539">                        System.out.printf(&quot;%s\n&quot;, ll.getLocation_name());</span>
+<span class="fc" id="L540">                        System.out.println(&quot;-------------------------------------------------------&quot;);</span>
+<span class="fc" id="L541">                        System.out.println(&quot;ID   Time        Departure/Arrival to/from Location&quot;);</span>
+<span class="fc" id="L542">                        System.out.println(&quot;-------------------------------------------------------&quot;);</span>
+
+                        // Print the schedule
+<span class="fc bfc" id="L545" title="All 2 branches covered.">                        for (Flight f : sorted_dep_schedule) {</span>
+<span class="fc" id="L546">                            String dep_time = f.getDep_local_time().toString();</span>
+<span class="fc" id="L547">                            String dep_day = f.getDep_dayofWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());</span>
+<span class="fc" id="L548">                            System.out.printf(&quot;%4d %s %s   Departure to %s\n&quot;, f.getFlight_id(), dep_day, dep_time,</span>
+<span class="fc" id="L549">                                    f.getArr_location().getLocation_name());</span>
+<span class="fc" id="L550">                        }</span>
+<span class="fc" id="L551">                        break;</span>
+                    case (&quot;ARRIVALS&quot;):
+                        // Error checking
+                        // 1) No parameters given.
+<span class="fc bfc" id="L555" title="All 2 branches covered.">                        if (input.length == 1) {</span>
+<span class="fc" id="L556">                            System.out.println(&quot;Usage:\nARRIVALS &lt;location_name&gt;&quot;);</span>
+<span class="fc" id="L557">                            break;</span>
+                        }
+                        // 2) Location is not present in the database (case insensitive based on name)
+<span class="fc bfc" id="L560" title="All 2 branches covered.">                        if (is_location_exist(input[1], list_of_locations) == null) {</span>
+<span class="fc" id="L561">                            System.out.println(&quot;This location does not exist in the system.&quot;);</span>
+<span class="fc" id="L562">                            break;</span>
+                        }
+<span class="fc" id="L564">                        Location lll = is_location_exist(input[1], list_of_locations);</span>
+<span class="pc bpc" id="L565" title="3 of 4 branches missed.">                        assert lll != null;</span>
+<span class="fc" id="L566">                        ArrayList&lt;Flight&gt; arr_schedule = new ArrayList&lt;&gt;(lll.getArriving_f());</span>
+                        // Sort all arriving flights, in order of arrival time
+<span class="fc" id="L568">                        ArrayList&lt;Flight&gt; sorted_arr_schedule = sort_arr(arr_schedule);</span>
+<span class="fc" id="L569">                        System.out.printf(&quot;%s\n&quot;, lll.getLocation_name());</span>
+<span class="fc" id="L570">                        System.out.println(&quot;-------------------------------------------------------&quot;);</span>
+<span class="fc" id="L571">                        System.out.println(&quot;ID   Time        Departure/Arrival to/from Location&quot;);</span>
+<span class="fc" id="L572">                        System.out.println(&quot;-------------------------------------------------------&quot;);</span>
+
+                        // Print the schedule
+<span class="fc bfc" id="L575" title="All 2 branches covered.">                        for (Flight f : sorted_arr_schedule) {</span>
+<span class="fc" id="L576">                            String arr_day = Flight.arrival_day_week(f).getDisplayName(TextStyle.SHORT, Locale.getDefault());</span>
+<span class="fc" id="L577">                            String arr_time = Flight.arrival_l_time(f).toString();</span>
+<span class="fc" id="L578">                            System.out.printf(&quot;%4d %s %s   Arrival from %s\n&quot;, f.getFlight_id(), arr_day, arr_time,</span>
+<span class="fc" id="L579">                                    f.getDep_location().getLocation_name());</span>
+<span class="fc" id="L580">                        }</span>
+<span class="fc" id="L581">                        break;</span>
+                    case (&quot;TRAVEL&quot;):
+                        // Error Checking
+                        // No parameters given.
+<span class="fc bfc" id="L585" title="All 2 branches covered.">                        if (input.length &lt; 3) {</span>
+<span class="fc" id="L586">                            System.out.println(&quot;Usage: TRAVEL &lt;from&gt; &lt;to&gt; [cost/duration/stopovers/layover/flight_time]&quot;);</span>
+<span class="fc" id="L587">                            break;</span>
+                        }
+                        // Starting location is not present in the database (case insensitive based on name.
+<span class="fc bfc" id="L590" title="All 2 branches covered.">                        if (is_location_exist(input[1], list_of_locations) == null) {</span>
+<span class="fc" id="L591">                            System.out.println(&quot;Starting location not found.&quot;);</span>
+<span class="fc" id="L592">                            break;</span>
+                        }
+                        // Ending location is not present in the database (case insensitive based on name.
+<span class="fc bfc" id="L595" title="All 2 branches covered.">                        if (is_location_exist(input[2], list_of_locations) == null) {</span>
+<span class="fc" id="L596">                            System.out.println(&quot;Ending location not found.&quot;);</span>
+<span class="fc" id="L597">                            break;</span>
+                        }
+                        // Bad sorting property.
+<span class="fc bfc" id="L600" title="All 2 branches covered.">                        if (input.length &gt; 3) {</span>
+<span class="fc bfc" id="L601" title="All 4 branches covered.">                            if (!input[3].equalsIgnoreCase(&quot;cost&quot;) &amp;&amp; !input[3].equalsIgnoreCase(&quot;duration&quot;)</span>
+<span class="fc bfc" id="L602" title="All 4 branches covered.">                                    &amp;&amp; !input[3].equalsIgnoreCase(&quot;stopovers&quot;) &amp;&amp; !input[3].equalsIgnoreCase(&quot;layover&quot;)</span>
+<span class="fc bfc" id="L603" title="All 2 branches covered.">                                    &amp;&amp; !input[3].equalsIgnoreCase(&quot;flight_time&quot;)) {</span>
+<span class="fc" id="L604">                                System.out.println(&quot;Invalid sorting property: must be either cost, duration, stopovers, layover, or flight_time.&quot;);</span>
+<span class="fc" id="L605">                                break;</span>
+                            }
+                        }
+
+                        // Get the &quot;from&quot; and &quot;to&quot; location
+<span class="fc" id="L610">                        Location from = is_location_exist(input[1], list_of_locations);</span>
+<span class="fc" id="L611">                        Location to = is_location_exist(input[2], list_of_locations);</span>
+                        // No flight paths of 3 stopovers or less are available from the given starting location to the ending destination.
+<span class="pc bpc" id="L613" title="2 of 4 branches missed.">                        if (from.getDeparting_f() == null || to.getArriving_f() == null) {</span>
+<span class="nc" id="L614">                            System.out.printf(&quot;Sorry, no flights with 3 or less stopovers are available from %s to %s.\n&quot;,</span>
+<span class="nc" id="L615">                                    from.getLocation_name(), to.getLocation_name());</span>
+<span class="nc" id="L616">                            break;</span>
+                        }
+                        // To store the travel routes
+<span class="fc" id="L619">                        ArrayList&lt;ArrayList&lt;Flight&gt;&gt; routes = new ArrayList&lt;&gt;();</span>
+                        // Count the possible routes
+<span class="fc" id="L621">                        int count = 0;</span>
+                        // Loop through all the departing flight in the start location
+<span class="fc bfc" id="L623" title="All 2 branches covered.">                        for (Flight f1 : from.getDeparting_f()) {</span>
+                            // Now check if any flight at the start location can arrive at the end location directly
+                            // Loop through all the arriving flights in the end location
+<span class="fc bfc" id="L626" title="All 2 branches covered.">                            for (Flight f2 : to.getArriving_f()) {</span>
+                                // If f1 and f2 is the same flight, add it to the targeted flights list and route list (0 stopover) Lovely and simple aww
+<span class="pc bpc" id="L628" title="1 of 2 branches missed.">                                if (f1 == f2) {</span>
+                                    // To store the individual targeted flights
+<span class="nc" id="L630">                                    ArrayList&lt;Flight&gt; flights = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L631">                                    flights.add(f1);</span>
+<span class="nc" id="L632">                                    routes.add(flights);</span>
+<span class="nc" id="L633">                                    count++;</span>
+                                }
+                                // Now check if there are other travel plans with stopovers
+                                // First check if the f1's arriving place is the departing place for f2 (one stopover)
+<span class="pc bpc" id="L637" title="1 of 4 branches missed.">                                if (f1.getArr_location() == f2.getDep_location() &amp;&amp; f2.getArr_location() != from) {</span>
+                                    // add f1 and f2 to the target flights list and add the whole list to route
+<span class="pc bpc" id="L639" title="1 of 2 branches missed.">                                    if (f2.getArr_location() == to) {</span>
+                                        // To store the individual targeted flights
+<span class="fc" id="L641">                                        ArrayList&lt;Flight&gt; flights = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L642">                                        flights.add(f1);</span>
+<span class="fc" id="L643">                                        flights.add(f2);</span>
+<span class="fc" id="L644">                                        routes.add(flights);</span>
+<span class="fc" id="L645">                                        count++;</span>
+                                    }
+                                }
+                                // Secondly check if there's a f3, which its departing location is f1's arriving location
+                                // and its arriving location is f2's departing location. (two stopovers)
+<span class="fc bfc" id="L650" title="All 2 branches covered.">                                for (Flight f3 : f1.getArr_location().getDeparting_f()) {</span>
+<span class="pc bpc" id="L651" title="1 of 4 branches missed.">                                    if (f1.getArr_location() == f3.getDep_location() &amp;&amp; f3.getArr_location() == f2.getDep_location() &amp;&amp;</span>
+<span class="pc bpc" id="L652" title="2 of 4 branches missed.">                                            f3.getArr_location() != from &amp;&amp; f3.getArr_location() != to) {</span>
+                                        // add f1, f2, f3 to the target flights list and add the whole list to route
+<span class="pc bpc" id="L654" title="1 of 2 branches missed.">                                        if (f2.getArr_location() == to) {</span>
+                                            // To store the individual targeted flights
+<span class="fc" id="L656">                                            ArrayList&lt;Flight&gt; flights = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L657">                                            flights.add(f1);</span>
+<span class="fc" id="L658">                                            flights.add(f3);</span>
+<span class="fc" id="L659">                                            flights.add(f2);</span>
+<span class="fc" id="L660">                                            routes.add(flights);</span>
+<span class="fc" id="L661">                                            count++;</span>
+                                        }
+                                    }
+                                    // Thirdly check if there's a f4 which it's departing location is f3's arriving location,
+                                    // it's arriving location is f2's departing location (three stopovers)
+<span class="fc bfc" id="L666" title="All 2 branches covered.">                                    for (Flight f4 : list_of_flights) {</span>
+<span class="pc bpc" id="L667" title="1 of 4 branches missed.">                                        if (f1.getArr_location() == f3.getDep_location() &amp;&amp; f3.getArr_location() == f4.getDep_location() &amp;&amp;</span>
+<span class="fc bfc" id="L668" title="All 4 branches covered.">                                                f3.getArr_location() != from &amp;&amp; f4.getArr_location() == f2.getDep_location() &amp;&amp;</span>
+<span class="pc bpc" id="L669" title="1 of 4 branches missed.">                                                f4.getArr_location() != from &amp;&amp; f4.getArr_location() != f3.getDep_location() &amp;&amp;</span>
+<span class="pc bpc" id="L670" title="1 of 4 branches missed.">                                                f3.getArr_location() != to &amp;&amp; f4.getArr_location() != to) {</span>
+<span class="pc bpc" id="L671" title="1 of 2 branches missed.">                                            if (f2.getArr_location() == to) {</span>
+                                                // To store the individual targeted flights
+<span class="fc" id="L673">                                                ArrayList&lt;Flight&gt; flights = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L674">                                                flights.add(f1);</span>
+<span class="fc" id="L675">                                                flights.add(f3);</span>
+<span class="fc" id="L676">                                                flights.add(f4);</span>
+<span class="fc" id="L677">                                                flights.add(f2);</span>
+<span class="fc" id="L678">                                                routes.add(flights);</span>
+<span class="fc" id="L679">                                                count++;</span>
+                                            }
+                                        }
+<span class="pc bpc" id="L682" title="1 of 4 branches missed.">                                        if (f1.getArr_location() == f4.getDep_location() &amp;&amp; f4.getArr_location() == f3.getDep_location() &amp;&amp;</span>
+<span class="nc bnc" id="L683" title="All 4 branches missed.">                                                f4.getArr_location() != from &amp;&amp; f3.getArr_location() == f2.getDep_location() &amp;&amp;</span>
+<span class="nc bnc" id="L684" title="All 4 branches missed.">                                                f3.getArr_location() != from &amp;&amp; f3.getArr_location() != f4.getDep_location() &amp;&amp;</span>
+<span class="nc bnc" id="L685" title="All 4 branches missed.">                                                f4.getArr_location() != to &amp;&amp; f3.getArr_location() != to) {</span>
+<span class="nc bnc" id="L686" title="All 2 branches missed.">                                            if (f2.getArr_location() == to) {</span>
+                                                // To store the individual targeted flights
+<span class="nc" id="L688">                                                ArrayList&lt;Flight&gt; flights = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L689">                                                flights.add(f1);</span>
+<span class="nc" id="L690">                                                flights.add(f4);</span>
+<span class="nc" id="L691">                                                flights.add(f3);</span>
+<span class="nc" id="L692">                                                flights.add(f2);</span>
+<span class="nc" id="L693">                                                routes.add(flights);</span>
+<span class="nc" id="L694">                                                count++;</span>
+                                            }
+                                        }
+<span class="fc" id="L697">                                    }</span>
+<span class="fc" id="L698">                                }</span>
+<span class="fc" id="L699">                            }</span>
+
+<span class="fc" id="L701">                        }</span>
+                        // No flight paths of 3 stopovers or less are available from the given starting location to the ending destination.
+<span class="fc bfc" id="L703" title="All 2 branches covered.">                        if (count == 0) {</span>
+<span class="fc" id="L704">                            System.out.printf(&quot;Sorry, no flights with 3 or less stopovers are available from %s to %s.\n&quot;,</span>
+<span class="fc" id="L705">                                    from.getLocation_name(), to.getLocation_name());</span>
+<span class="fc" id="L706">                            break;</span>
+                        }
+                        // Now we can print the required route
+<span class="fc bfc" id="L709" title="All 2 branches covered.">                        if (input.length == 3) {</span>
+                            // TRAVEL &lt;from&gt; &lt;to&gt;
+                            // Default ordering: shortest overall duration
+                            // Store the total duration of each route
+<span class="fc" id="L713">                            ArrayList&lt;Integer&gt; total_duration = new ArrayList&lt;&gt;();</span>
+                            // Get the total duration of each route
+<span class="fc bfc" id="L715" title="All 2 branches covered.">                            for (ArrayList&lt;Flight&gt; f_route : routes) {</span>
+<span class="fc" id="L716">                                int duration = 0;</span>
+<span class="fc bfc" id="L717" title="All 2 branches covered.">                                for (Flight f : f_route) {</span>
+<span class="fc" id="L718">                                    duration = duration + f.getDuration();</span>
+<span class="fc" id="L719">                                }</span>
+                                // Add layover time
+<span class="fc bfc" id="L721" title="All 2 branches covered.">                                for (int k = 0; k &lt; f_route.size() - 1; k++) {</span>
+<span class="fc" id="L722">                                    duration = duration + Flight.layover(f_route.get(k), f_route.get(k + 1));</span>
+                                }
+<span class="fc" id="L724">                                total_duration.add(duration);</span>
+<span class="fc" id="L725">                            }</span>
+                            // Compare the total duration and print the shortest one
+<span class="fc" id="L727">                            int shortest = total_duration.get(0);</span>
+<span class="fc" id="L728">                            int index = 0;</span>
+<span class="pc bpc" id="L729" title="1 of 2 branches missed.">                            if (total_duration.size() &gt; 1) {</span>
+<span class="fc bfc" id="L730" title="All 2 branches covered.">                                for (int i = 0; i &lt; total_duration.size(); i++) {</span>
+<span class="fc bfc" id="L731" title="All 2 branches covered.">                                    if (shortest &gt; total_duration.get(i)) {</span>
+<span class="fc" id="L732">                                        shortest = total_duration.get(i);</span>
+<span class="fc" id="L733">                                        index = i;</span>
+                                    }
+                                }
+                            }
+<span class="fc" id="L737">                            print_for_travel_two(routes, index);</span>
+                        }
+<span class="fc bfc" id="L739" title="All 2 branches covered.">                        if (input.length &gt; 3) {</span>
+                            // 1) sort by cost - minimum current cost
+<span class="fc bfc" id="L741" title="All 2 branches covered.">                            if (input[3].equalsIgnoreCase(&quot;cost&quot;)) {</span>
+                                // Get the total cost of each route
+                                // Then sort the list by cost
+                                // If total cost is equal, sort then by minimum total duration.
+<span class="fc" id="L745">                                routes.sort((o1, o2) -&gt; {</span>
+                                    // Get cost
+<span class="fc" id="L747">                                    double cost1 = 0;</span>
+<span class="fc bfc" id="L748" title="All 2 branches covered.">                                    for (Flight f1 : o1) {</span>
+<span class="fc" id="L749">                                        cost1 = cost1 + f1.getTicketPrice();</span>
+<span class="fc" id="L750">                                    }</span>
+<span class="fc" id="L751">                                    double cost2 = 0;</span>
+<span class="fc bfc" id="L752" title="All 2 branches covered.">                                    for (Flight f2 : o2) {</span>
+<span class="fc" id="L753">                                        cost2 = cost2 + f2.getTicketPrice();</span>
+<span class="fc" id="L754">                                    }</span>
+                                    // Get duration
+<span class="fc" id="L756">                                    int duration1 = 0;</span>
+<span class="fc bfc" id="L757" title="All 2 branches covered.">                                    for (Flight f1 : o1) {</span>
+<span class="fc" id="L758">                                        duration1 = duration1 + f1.getDuration();</span>
+<span class="fc" id="L759">                                    }</span>
+                                    // Add layover time
+<span class="fc bfc" id="L761" title="All 2 branches covered.">                                    for (int k = 0; k &lt; o1.size() - 1; k++) {</span>
+<span class="fc" id="L762">                                        duration1 = duration1 + Flight.layover(o1.get(k), o1.get(k + 1));</span>
+                                    }
+<span class="fc" id="L764">                                    int duration2 = 0;</span>
+<span class="fc bfc" id="L765" title="All 2 branches covered.">                                    for (Flight f2 : o2) {</span>
+<span class="fc" id="L766">                                        duration2 = duration2 + f2.getDuration();</span>
+<span class="fc" id="L767">                                    }</span>
+                                    // Add layover time
+<span class="fc bfc" id="L769" title="All 2 branches covered.">                                    for (int k = 0; k &lt; o2.size() - 1; k++) {</span>
+<span class="fc" id="L770">                                        duration2 = duration2 + Flight.layover(o2.get(k), o2.get(k + 1));</span>
+                                    }
+<span class="fc bfc" id="L772" title="All 2 branches covered.">                                    if (cost1 == cost2) {</span>
+<span class="fc" id="L773">                                        return duration1 - duration2;</span>
+                                    } else {
+<span class="fc" id="L775">                                        return (int) (cost1 - cost2);</span>
+                                    }
+                                });
+<span class="fc" id="L778">                                int index = 0;</span>
+                                // If n is provided
+<span class="fc bfc" id="L780" title="All 2 branches covered.">                                if (input.length &gt; 4) {</span>
+                                    // If n is larger than the number of flights available, display the last one in the ordering.
+<span class="pc bpc" id="L782" title="1 of 2 branches missed.">                                    if (Integer.parseInt(input[4]) &gt; count) {</span>
+<span class="nc" id="L783">                                        index = count - 1;</span>
+<span class="pc bpc" id="L784" title="1 of 2 branches missed.">                                    } else if (Integer.parseInt(input[4]) &lt; 0) {</span>
+<span class="nc" id="L785">                                        index = 0;</span>
+                                    } else {
+<span class="fc" id="L787">                                        index = Integer.parseInt(input[4]);</span>
+                                    }
+                                }
+<span class="fc" id="L790">                                print_for_travel_two(routes, index);</span>
+                            }
+                            // 2) sort by duration - minimum total duration
+<span class="fc bfc" id="L793" title="All 2 branches covered.">                            if (input[3].equalsIgnoreCase(&quot;duration&quot;)) {</span>
+                                // Get the total duration of each route
+                                // Then sort the list by duration
+                                // If total duration is equal, sort then by minimum current cost.
+<span class="fc" id="L797">                                routes.sort((o1, o2) -&gt; {</span>
+                                    // Get cost
+<span class="fc" id="L799">                                    double cost1 = 0;</span>
+<span class="fc bfc" id="L800" title="All 2 branches covered.">                                    for (Flight f1 : o1) {</span>
+<span class="fc" id="L801">                                        cost1 = cost1 + f1.getTicketPrice();</span>
+<span class="fc" id="L802">                                    }</span>
+<span class="fc" id="L803">                                    double cost2 = 0;</span>
+<span class="fc bfc" id="L804" title="All 2 branches covered.">                                    for (Flight f2 : o2) {</span>
+<span class="fc" id="L805">                                        cost2 = cost2 + f2.getTicketPrice();</span>
+<span class="fc" id="L806">                                    }</span>
+                                    // Get duration
+<span class="fc" id="L808">                                    int duration1 = 0;</span>
+<span class="fc bfc" id="L809" title="All 2 branches covered.">                                    for (Flight f1 : o1) {</span>
+<span class="fc" id="L810">                                        duration1 = duration1 + f1.getDuration();</span>
+<span class="fc" id="L811">                                    }</span>
+                                    // Add layover time
+<span class="fc bfc" id="L813" title="All 2 branches covered.">                                    for (int k = 0; k &lt; o1.size() - 1; k++) {</span>
+<span class="fc" id="L814">                                        duration1 = duration1 + Flight.layover(o1.get(k), o1.get(k + 1));</span>
+                                    }
+<span class="fc" id="L816">                                    int duration2 = 0;</span>
+<span class="fc bfc" id="L817" title="All 2 branches covered.">                                    for (Flight f2 : o2) {</span>
+<span class="fc" id="L818">                                        duration2 = duration2 + f2.getDuration();</span>
+<span class="fc" id="L819">                                    }</span>
+                                    // Add layover time
+<span class="fc bfc" id="L821" title="All 2 branches covered.">                                    for (int k = 0; k &lt; o2.size() - 1; k++) {</span>
+<span class="fc" id="L822">                                        duration2 = duration2 + Flight.layover(o2.get(k), o2.get(k + 1));</span>
+                                    }
+<span class="fc bfc" id="L824" title="All 2 branches covered.">                                    if (duration1 == duration2) {</span>
+<span class="fc" id="L825">                                        return (int) (cost1 - cost2);</span>
+                                    } else {
+<span class="fc" id="L827">                                        return duration1 - duration2;</span>
+                                    }
+                                });
+<span class="fc" id="L830">                                int index = 0;</span>
+                                // If n is provided
+<span class="fc bfc" id="L832" title="All 2 branches covered.">                                if (input.length &gt; 4) {</span>
+                                    // If n is larger than the number of flights available, display the last one in the ordering.
+<span class="pc bpc" id="L834" title="1 of 2 branches missed.">                                    if (Integer.parseInt(input[4]) &gt; count) {</span>
+<span class="nc" id="L835">                                        index = count - 1;</span>
+<span class="pc bpc" id="L836" title="1 of 2 branches missed.">                                    } else if (Integer.parseInt(input[4]) &lt; 0) {</span>
+<span class="nc" id="L837">                                        index = 0;</span>
+                                    } else {
+<span class="fc" id="L839">                                        index = Integer.parseInt(input[4]);</span>
+                                    }
+                                }
+<span class="fc" id="L842">                                print_for_travel_two(routes, index);</span>
+                            }
+                            // sort by stopovers - minimum stopovers
+<span class="fc bfc" id="L845" title="All 2 branches covered.">                            if (input[3].equalsIgnoreCase(&quot;stopovers&quot;)) {</span>
+                                // Get the total stopovers of each route
+                                // Then sort the list by number of stopovers
+                                // If the number of stopovers are equal, sort then by minimum total duration (and then by minimum cost).
+<span class="fc" id="L849">                                routes.sort((o1, o2) -&gt; {</span>
+                                    // Get cost
+<span class="fc" id="L851">                                    double cost1 = 0;</span>
+<span class="fc bfc" id="L852" title="All 2 branches covered.">                                    for (Flight f1 : o1) {</span>
+<span class="fc" id="L853">                                        cost1 = cost1 + f1.getTicketPrice();</span>
+<span class="fc" id="L854">                                    }</span>
+<span class="fc" id="L855">                                    double cost2 = 0;</span>
+<span class="fc bfc" id="L856" title="All 2 branches covered.">                                    for (Flight f2 : o2) {</span>
+<span class="fc" id="L857">                                        cost2 = cost2 + f2.getTicketPrice();</span>
+<span class="fc" id="L858">                                    }</span>
+                                    // Get duration
+<span class="fc" id="L860">                                    int duration1 = 0;</span>
+<span class="fc bfc" id="L861" title="All 2 branches covered.">                                    for (Flight f1 : o1) {</span>
+<span class="fc" id="L862">                                        duration1 = duration1 + f1.getDuration();</span>
+<span class="fc" id="L863">                                    }</span>
+                                    // Add layover time
+<span class="fc bfc" id="L865" title="All 2 branches covered.">                                    for (int k = 0; k &lt; o1.size() - 1; k++) {</span>
+<span class="fc" id="L866">                                        duration1 = duration1 + Flight.layover(o1.get(k), o1.get(k + 1));</span>
+                                    }
+<span class="fc" id="L868">                                    int duration2 = 0;</span>
+<span class="fc bfc" id="L869" title="All 2 branches covered.">                                    for (Flight f2 : o2) {</span>
+<span class="fc" id="L870">                                        duration2 = duration2 + f2.getDuration();</span>
+<span class="fc" id="L871">                                    }</span>
+                                    // Add layover time
+<span class="fc bfc" id="L873" title="All 2 branches covered.">                                    for (int k = 0; k &lt; o2.size() - 1; k++) {</span>
+<span class="fc" id="L874">                                        duration2 = duration2 + Flight.layover(o2.get(k), o2.get(k + 1));</span>
+                                    }
+                                    // Get stopovers
+<span class="fc" id="L877">                                    int stopovers1 = o1.size() - 1;</span>
+<span class="fc" id="L878">                                    int stopovers2 = o2.size() - 1;</span>
+<span class="fc bfc" id="L879" title="All 2 branches covered.">                                    if (stopovers1 == stopovers2) {</span>
+<span class="fc bfc" id="L880" title="All 2 branches covered.">                                        if (duration1 == duration2) {</span>
+<span class="fc" id="L881">                                            return (int) (cost1 - cost2);</span>
+                                        } else {
+<span class="fc" id="L883">                                            return duration1 - duration2;</span>
+                                        }
+                                    } else {
+<span class="fc" id="L886">                                        return stopovers1 - stopovers2;</span>
+                                    }
+                                });
+<span class="fc" id="L889">                                int index = 0;</span>
+                                // If n is provided
+<span class="fc bfc" id="L891" title="All 2 branches covered.">                                if (input.length &gt; 4) {</span>
+                                    // If n is larger than the number of flights available, display the last one in the ordering.
+<span class="pc bpc" id="L893" title="1 of 2 branches missed.">                                    if (Integer.parseInt(input[4]) &gt; count) {</span>
+<span class="nc" id="L894">                                        index = count - 1;</span>
+<span class="pc bpc" id="L895" title="1 of 2 branches missed.">                                    } else if (Integer.parseInt(input[4]) &lt; 0) {</span>
+<span class="nc" id="L896">                                        index = 0;</span>
+                                    } else {
+<span class="fc" id="L898">                                        index = Integer.parseInt(input[4]);</span>
+                                    }
+                                }
+<span class="fc" id="L901">                                print_for_travel_two(routes, index);</span>
+                            }
+                            // sort by layover - minimum layover time
+<span class="fc bfc" id="L904" title="All 2 branches covered.">                            if (input[3].equalsIgnoreCase(&quot;layover&quot;)) {</span>
+                                // Get the layover time of each route
+                                // Then sort the list by layover time
+                                // If the layover time are equal, sort then by minimum total duration (and then by minimum cost).
+<span class="fc" id="L908">                                routes.sort((o1, o2) -&gt; {</span>
+                                    // Get cost
+<span class="fc" id="L910">                                    double cost1 = 0;</span>
+<span class="fc bfc" id="L911" title="All 2 branches covered.">                                    for (Flight f1 : o1) {</span>
+<span class="fc" id="L912">                                        cost1 = cost1 + f1.getTicketPrice();</span>
+<span class="fc" id="L913">                                    }</span>
+<span class="fc" id="L914">                                    double cost2 = 0;</span>
+<span class="fc bfc" id="L915" title="All 2 branches covered.">                                    for (Flight f2 : o2) {</span>
+<span class="fc" id="L916">                                        cost2 = cost2 + f2.getTicketPrice();</span>
+<span class="fc" id="L917">                                    }</span>
+                                    // Get duration
+<span class="fc" id="L919">                                    int duration1 = 0;</span>
+<span class="fc bfc" id="L920" title="All 2 branches covered.">                                    for (Flight f1 : o1) {</span>
+<span class="fc" id="L921">                                        duration1 = duration1 + f1.getDuration();</span>
+<span class="fc" id="L922">                                    }</span>
+                                    // Add layover time
+<span class="fc bfc" id="L924" title="All 2 branches covered.">                                    for (int k = 0; k &lt; o1.size() - 1; k++) {</span>
+<span class="fc" id="L925">                                        duration1 = duration1 + Flight.layover(o1.get(k), o1.get(k + 1));</span>
+                                    }
+<span class="fc" id="L927">                                    int duration2 = 0;</span>
+<span class="fc bfc" id="L928" title="All 2 branches covered.">                                    for (Flight f2 : o2) {</span>
+<span class="fc" id="L929">                                        duration2 = duration2 + f2.getDuration();</span>
+<span class="fc" id="L930">                                    }</span>
+                                    // Add layover time
+<span class="fc bfc" id="L932" title="All 2 branches covered.">                                    for (int k = 0; k &lt; o2.size() - 1; k++) {</span>
+<span class="fc" id="L933">                                        duration2 = duration2 + Flight.layover(o2.get(k), o2.get(k + 1));</span>
+                                    }
+                                    // Get layover time
+<span class="fc" id="L936">                                    int layover1 = 0;</span>
+<span class="fc" id="L937">                                    int layover2 = 0;</span>
+<span class="fc bfc" id="L938" title="All 2 branches covered.">                                    for (int a = 0; a &lt; o1.size() - 1; a++) {</span>
+<span class="fc" id="L939">                                        layover1 = layover1 + Flight.layover(o1.get(a), o1.get(a + 1));</span>
+                                    }
+<span class="fc bfc" id="L941" title="All 2 branches covered.">                                    for (int b = 0; b &lt; o1.size() - 1; b++) {</span>
+<span class="fc" id="L942">                                        layover2 = layover2 + Flight.layover(o1.get(b), o1.get(b + 1));</span>
+                                    }
+<span class="pc bpc" id="L944" title="1 of 2 branches missed.">                                    if (layover1 == layover2) {</span>
+<span class="fc bfc" id="L945" title="All 2 branches covered.">                                        if (duration1 == duration2) {</span>
+<span class="fc" id="L946">                                            return (int) (cost1 - cost2);</span>
+                                        } else {
+<span class="fc" id="L948">                                            return duration1 - duration2;</span>
+                                        }
+                                    } else {
+<span class="nc" id="L951">                                        return layover1 - layover2;</span>
+                                    }
+                                });
+<span class="fc" id="L954">                                int index = 0;</span>
+                                // If n is provided
+<span class="fc bfc" id="L956" title="All 2 branches covered.">                                if (input.length &gt; 4) {</span>
+                                    // If n is larger than the number of flights available, display the last one in the ordering.
+<span class="pc bpc" id="L958" title="1 of 2 branches missed.">                                    if (Integer.parseInt(input[4]) &gt; count) {</span>
+<span class="nc" id="L959">                                        index = count - 1;</span>
+<span class="pc bpc" id="L960" title="1 of 2 branches missed.">                                    } else if (Integer.parseInt(input[4]) &lt; 0) {</span>
+<span class="nc" id="L961">                                        index = 0;</span>
+                                    } else {
+<span class="fc" id="L963">                                        index = Integer.parseInt(input[4]);</span>
+                                    }
+                                }
+<span class="fc" id="L966">                                print_for_travel_two(routes, index);</span>
+                            }
+                            // sort by flight_time - minimum flight time
+<span class="fc bfc" id="L969" title="All 2 branches covered.">                            if (input[3].equalsIgnoreCase(&quot;flight_time&quot;)) {</span>
+                                // Get the flight time of each route
+                                // Then sort the list by flight time
+                                // If flight time is equal, sort then by minimum total duration (and then by minimum cost).
+<span class="fc" id="L973">                                routes.sort((o1, o2) -&gt; {</span>
+                                    // Get cost
+<span class="fc" id="L975">                                    double cost1 = 0;</span>
+<span class="fc bfc" id="L976" title="All 2 branches covered.">                                    for (Flight f1 : o1) {</span>
+<span class="fc" id="L977">                                        cost1 = cost1 + f1.getTicketPrice();</span>
+<span class="fc" id="L978">                                    }</span>
+<span class="fc" id="L979">                                    double cost2 = 0;</span>
+<span class="fc bfc" id="L980" title="All 2 branches covered.">                                    for (Flight f2 : o2) {</span>
+<span class="fc" id="L981">                                        cost2 = cost2 + f2.getTicketPrice();</span>
+<span class="fc" id="L982">                                    }</span>
+                                    // Get duration
+<span class="fc" id="L984">                                    int duration1 = 0;</span>
+<span class="fc bfc" id="L985" title="All 2 branches covered.">                                    for (Flight f1 : o1) {</span>
+<span class="fc" id="L986">                                        duration1 = duration1 + f1.getDuration();</span>
+<span class="fc" id="L987">                                    }</span>
+                                    // Add layover time
+<span class="fc bfc" id="L989" title="All 2 branches covered.">                                    for (int k = 0; k &lt; o1.size() - 1; k++) {</span>
+<span class="fc" id="L990">                                        duration1 = duration1 + Flight.layover(o1.get(k), o1.get(k + 1));</span>
+                                    }
+<span class="fc" id="L992">                                    int duration2 = 0;</span>
+<span class="fc bfc" id="L993" title="All 2 branches covered.">                                    for (Flight f2 : o2) {</span>
+<span class="fc" id="L994">                                        duration2 = duration2 + f2.getDuration();</span>
+<span class="fc" id="L995">                                    }</span>
+                                    // Add layover time
+<span class="fc bfc" id="L997" title="All 2 branches covered.">                                    for (int k = 0; k &lt; o2.size() - 1; k++) {</span>
+<span class="fc" id="L998">                                        duration2 = duration2 + Flight.layover(o2.get(k), o2.get(k + 1));</span>
+                                    }
+                                    // Get flight time
+<span class="fc" id="L1001">                                    int flight1 = 0;</span>
+<span class="fc" id="L1002">                                    int flight2 = 0;</span>
+<span class="fc bfc" id="L1003" title="All 2 branches covered.">                                    for (Flight ff1 : o1) {</span>
+<span class="fc" id="L1004">                                        flight1 = flight1 + ff1.getDuration();</span>
+<span class="fc" id="L1005">                                    }</span>
+<span class="fc bfc" id="L1006" title="All 2 branches covered.">                                    for (Flight ff2 : o2) {</span>
+<span class="fc" id="L1007">                                        flight2 = flight2 + ff2.getDuration();</span>
+<span class="fc" id="L1008">                                    }</span>
+<span class="fc bfc" id="L1009" title="All 2 branches covered.">                                    if (flight1 == flight2) {</span>
+<span class="fc bfc" id="L1010" title="All 2 branches covered.">                                        if (duration1 == duration2) {</span>
+<span class="fc" id="L1011">                                            return (int) (cost1 - cost2);</span>
+                                        } else {
+<span class="fc" id="L1013">                                            return duration1 - duration2;</span>
+                                        }
+                                    } else {
+<span class="fc" id="L1016">                                        return flight1 - flight2;</span>
+                                    }
+                                });
+<span class="fc" id="L1019">                                int index = 0;</span>
+                                // If n is provided
+<span class="fc bfc" id="L1021" title="All 2 branches covered.">                                if (input.length &gt; 4) {</span>
+                                    // If n is larger than the number of flights available, display the last one in the ordering.
+<span class="pc bpc" id="L1023" title="1 of 2 branches missed.">                                    if (Integer.parseInt(input[4]) &gt; count) {</span>
+<span class="nc" id="L1024">                                        index = count - 1;</span>
+<span class="pc bpc" id="L1025" title="1 of 2 branches missed.">                                    } else if (Integer.parseInt(input[4]) &lt; 0) {</span>
+<span class="nc" id="L1026">                                        index = 0;</span>
+                                    } else {
+<span class="fc" id="L1028">                                        index = Integer.parseInt(input[4]);</span>
+                                    }
+                                }
+<span class="fc" id="L1031">                                print_for_travel_two(routes, index);</span>
+<span class="fc" id="L1032">                            }</span>
+                        }
+                        break;
+                    // Print the help menu for user
+                    case (&quot;HELP&quot;):
+<span class="fc" id="L1037">                        System.out.println(&quot;FLIGHTS - list all available flights ordered by departure time, then departure location name&quot;);</span>
+<span class="fc" id="L1038">                        System.out.println(&quot;FLIGHT ADD &lt;departure time&gt; &lt;from&gt; &lt;to&gt; &lt;capacity&gt; - add a flight&quot;);</span>
+<span class="fc" id="L1039">                        System.out.println(&quot;FLIGHT IMPORT/EXPORT &lt;filename&gt; - import/export flights to csv file&quot;);</span>
+<span class="fc" id="L1040">                        System.out.println(&quot;FLIGHT &lt;id&gt; - view information about a flight (from-&gt;to, departure arrival times, &quot; +</span>
+                                &quot;current ticket price, capacity, passengers booked)&quot;);
+<span class="fc" id="L1042">                        System.out.println(&quot;FLIGHT &lt;id&gt; BOOK &lt;num&gt; - book a certain number of passengers for the flight at the current ticket price, &quot; +</span>
+                                &quot;and then adjust the ticket price to reflect the reduced capacity remaining. &quot; +
+                                &quot;If no number is given, book 1 passenger. If the given number of bookings is more than the remaining capacity, &quot; +
+                                &quot;only accept bookings until the capacity is full.&quot;);
+<span class="fc" id="L1046">                        System.out.println(&quot;FLIGHT &lt;id&gt; REMOVE - remove a flight from the schedule&quot;);</span>
+<span class="fc" id="L1047">                        System.out.println(&quot;FLIGHT &lt;id&gt; RESET - reset the number of passengers booked to 0, and the ticket price to its original state.\n&quot;);</span>
+<span class="fc" id="L1048">                        System.out.println(&quot;LOCATIONS - list all available locations in alphabetical order&quot;);</span>
+<span class="fc" id="L1049">                        System.out.println(&quot;LOCATION ADD &lt;name&gt; &lt;lat&gt; &lt;long&gt; &lt;demand_coefficient&gt; - add a location&quot;);</span>
+<span class="fc" id="L1050">                        System.out.println(&quot;LOCATION &lt;name&gt; - view details about a location (it's name, coordinates, demand coefficient)&quot;);</span>
+<span class="fc" id="L1051">                        System.out.println(&quot;LOCATION IMPORT/EXPORT &lt;filename&gt; - import/export locations to csv file&quot;);</span>
+<span class="fc" id="L1052">                        System.out.println(&quot;SCHEDULE &lt;location_name&gt; - list all departing and arriving flights, in order of the time they arrive/depart&quot;);</span>
+<span class="fc" id="L1053">                        System.out.println(&quot;DEPARTURES &lt;location_name&gt; - list all departing flights, in order of departure time&quot;);</span>
+<span class="fc" id="L1054">                        System.out.println(&quot;ARRIVALS &lt;location_name&gt; - list all arriving flights, in order of arrival time\n&quot;);</span>
+<span class="fc" id="L1055">                        System.out.println(&quot;TRAVEL &lt;from&gt; &lt;to&gt; [sort] [n] - list the nth possible flight route between a starting location and destination, &quot; +</span>
+                                &quot;with a maximum of 3 stopovers. Default ordering is for shortest overall duration. &quot; +
+                                &quot;If n is not provided, display the first one in the order. &quot; +
+                                &quot;If n is larger than the number of flights available, display the last one in the ordering.\n&quot;);
+<span class="fc" id="L1059">                        System.out.println(&quot;can have other orderings:&quot;);</span>
+<span class="fc" id="L1060">                        System.out.println(&quot;TRAVEL &lt;from&gt; &lt;to&gt; cost - minimum current cost&quot;);</span>
+<span class="fc" id="L1061">                        System.out.println(&quot;TRAVEL &lt;from&gt; &lt;to&gt; duration - minimum total duration&quot;);</span>
+<span class="fc" id="L1062">                        System.out.println(&quot;TRAVEL &lt;from&gt; &lt;to&gt; stopovers - minimum stopovers&quot;);</span>
+<span class="fc" id="L1063">                        System.out.println(&quot;TRAVEL &lt;from&gt; &lt;to&gt; layover - minimum layover time&quot;);</span>
+<span class="fc" id="L1064">                        System.out.println(&quot;TRAVEL &lt;from&gt; &lt;to&gt; flight_time - minimum flight time\n&quot;);</span>
+<span class="fc" id="L1065">                        System.out.println(&quot;HELP - outputs this help string.&quot;);</span>
+<span class="fc" id="L1066">                        System.out.println(&quot;EXIT - end the program.&quot;);</span>
+<span class="fc" id="L1067">                        break;</span>
+
+                    case (&quot;EXIT&quot;):
+<span class="fc" id="L1070">                        System.out.println(&quot;Application closed.&quot;);</span>
+<span class="fc" id="L1071">                        end = 1;</span>
+<span class="fc" id="L1072">                        break;</span>
+
+                    default:
+<span class="fc" id="L1075">                        System.out.println(&quot;Invalid command. Type 'help' for a list of commands.&quot;);</span>
+                        break;
+                }
+            }
+<span class="fc bfc" id="L1079" title="All 2 branches covered.">            if (end != 1) {</span>
+<span class="fc" id="L1080">                System.out.print(&quot;\nUser: &quot;);</span>
+            }
+<span class="fc" id="L1082">        }</span>
+
+<span class="fc" id="L1084">    }</span>
+
+
+    // Add a flight to the database
+    // handle error cases and return status negative if error
+    // (different status codes for different messages)
+    // do not print out anything in this function
+    public int addFlight(String date1, String date2, String start, String end, String capacity, int booked) {
+        // Check error cases
+        // 1) Time added was not in the correct format, for example “Monday 18:00”
+<span class="fc bfc" id="L1094" title="All 2 branches covered.">        if (!is_valid_day(date1)) {</span>
+<span class="fc" id="L1095">            return -1;</span>
+        }
+<span class="fc bfc" id="L1097" title="All 2 branches covered.">        if (!is_valid_time(date2)) {</span>
+<span class="fc" id="L1098">            return -8;</span>
+        }
+        // 2) Starting location was not in the database.
+<span class="fc bfc" id="L1101" title="All 2 branches covered.">        if (is_location_exist(start, list_of_locations) == null) {</span>
+<span class="fc" id="L1102">            return -2;</span>
+        }
+<span class="fc" id="L1104">        Location dep_l = is_location_exist(start, list_of_locations);</span>
+        // 3) Ending location was not in the database.
+<span class="fc bfc" id="L1106" title="All 2 branches covered.">        if (is_location_exist(end, list_of_locations) == null) {</span>
+<span class="fc" id="L1107">            return -3;</span>
+        }
+<span class="fc" id="L1109">        Location arr_l = is_location_exist(end, list_of_locations);</span>
+
+        // 4) Capacity was not a positive integer.
+<span class="fc bfc" id="L1112" title="All 2 branches covered.">        if (Integer.parseInt(capacity) &lt;= 0) {</span>
+<span class="fc" id="L1113">            return -4;</span>
+        }
+        // 5) The two locations entered were the same
+<span class="fc bfc" id="L1116" title="All 2 branches covered.">        if (start.equalsIgnoreCase(end)) {</span>
+<span class="fc" id="L1117">            return -5;</span>
+        }
+<span class="fc" id="L1119">        Flight newFlight = new Flight(id_counter, date1 + &quot; &quot; + date2,</span>
+<span class="fc" id="L1120">                dep_l, arr_l, Integer.parseInt(capacity));</span>
+        // 6) No runways are available for this flight at the designated location at that time.
+<span class="pc bpc" id="L1122" title="3 of 4 branches missed.">        assert dep_l != null;</span>
+<span class="fc bfc" id="L1123" title="All 2 branches covered.">        if (dep_l.hasRunwayDepartureSpace(newFlight) != null) {</span>
+<span class="fc" id="L1124">            return -6;</span>
+        }
+        // 7) No runways are available for this flight at the designated location at that time.
+<span class="pc bpc" id="L1127" title="3 of 4 branches missed.">        assert arr_l != null;</span>
+<span class="pc bpc" id="L1128" title="1 of 2 branches missed.">        if (arr_l.hasRunwayArrivalSpace(newFlight) != null) {</span>
+<span class="nc" id="L1129">            return -7;</span>
+        }
+        // Add new flight
+<span class="fc" id="L1132">        list_of_flights.add(newFlight);</span>
+<span class="fc" id="L1133">        newFlight.setNum_of_booked(booked);</span>
+<span class="fc" id="L1134">        id_counter = id_counter + 1;</span>
+<span class="fc" id="L1135">        return 1;</span>
+    }
+
+    // Add a location to the database
+    // do not print out anything in this function
+    // return negative numbers for error cases
+    public int addLocation(String name, String lat, String lon, String demand) {
+        // First check error cases
+        try {
+<span class="fc" id="L1144">            Double.parseDouble(lat);</span>
+<span class="fc" id="L1145">            Double.parseDouble(lon);</span>
+<span class="fc" id="L1146">        } catch (NumberFormatException e) {</span>
+<span class="fc" id="L1147">            return -5;</span>
+<span class="fc" id="L1148">        }</span>
+        // 1) Location is already present in the database (case insensitive based on name)
+<span class="fc bfc" id="L1150" title="All 2 branches covered.">        if (locationExist(name, list_of_locations)) {</span>
+<span class="fc" id="L1151">            return -1;</span>
+        }
+        // 2) Longitude exceeds bounds or is an invalid number.
+<span class="fc bfc" id="L1154" title="All 2 branches covered.">        if (!Location.is_Valid_lon(lon)) {</span>
+<span class="fc" id="L1155">            return -2;</span>
+        }
+        // 3) Latitude exceeds bounds or is an invalid number
+<span class="fc bfc" id="L1158" title="All 2 branches covered.">        if (!Location.is_Valid_lat(lat)) {</span>
+<span class="fc" id="L1159">            return -3;</span>
+        }
+        // 4) Demand coefficient exceeds bounds or is an invalid number.
+<span class="fc bfc" id="L1162" title="All 2 branches covered.">        if (!Location.is_Valid_coe(demand)) {</span>
+<span class="fc" id="L1163">            return -4;</span>
+        }
+        // If no errors, add the location to the database
+<span class="fc" id="L1166">        Location newLocation = new Location(name, Double.parseDouble(lat), Double.parseDouble(lon),</span>
+<span class="fc" id="L1167">                Double.parseDouble(demand));</span>
+<span class="fc" id="L1168">        list_of_locations.add(newLocation);</span>
+<span class="fc" id="L1169">        return 1;</span>
+    }
+
+    //flight import &lt;filename&gt;
+    public void importFlights(String[] command) {
+        try {
+<span class="fc bfc" id="L1175" title="All 2 branches covered.">            if (command.length &lt; 3) throw new FileNotFoundException();</span>
+<span class="fc" id="L1176">            BufferedReader br = new BufferedReader(new FileReader(new File(command[2])));</span>
+            String line;
+<span class="fc" id="L1178">            int count = 0;</span>
+<span class="fc" id="L1179">            int err = 0;</span>
+
+<span class="fc bfc" id="L1181" title="All 2 branches covered.">            while ((line = br.readLine()) != null) {</span>
+<span class="fc" id="L1182">                String[] lparts = line.split(&quot;,&quot;);</span>
+<span class="fc bfc" id="L1183" title="All 2 branches covered.">                if (lparts.length &lt; 5) continue;</span>
+<span class="fc" id="L1184">                String[] dparts = lparts[0].split(&quot; &quot;);</span>
+<span class="pc bpc" id="L1185" title="1 of 2 branches missed.">                if (dparts.length &lt; 2) continue;</span>
+<span class="fc" id="L1186">                int booked = 0;</span>
+
+                try {
+<span class="fc" id="L1189">                    booked = Integer.parseInt(lparts[4]);</span>
+
+<span class="fc" id="L1191">                } catch (NumberFormatException e) {</span>
+<span class="fc" id="L1192">                    continue;</span>
+<span class="fc" id="L1193">                }</span>
+
+<span class="fc" id="L1195">                int status = addFlight(dparts[0], dparts[1], lparts[1], lparts[2], lparts[3], booked);</span>
+<span class="fc bfc" id="L1196" title="All 2 branches covered.">                if (status &lt; 0) {</span>
+<span class="fc" id="L1197">                    err++;</span>
+<span class="fc" id="L1198">                    continue;</span>
+                }
+<span class="fc" id="L1200">                count++;</span>
+<span class="fc" id="L1201">            }</span>
+<span class="fc" id="L1202">            br.close();</span>
+<span class="pc bpc" id="L1203" title="1 of 2 branches missed.">            System.out.println(&quot;Imported &quot; + count + &quot; flight&quot; + (count != 1 ? &quot;s&quot; : &quot;&quot;) + &quot;.&quot;);</span>
+<span class="fc bfc" id="L1204" title="All 2 branches covered.">            if (err &gt; 0) {</span>
+<span class="pc bpc" id="L1205" title="1 of 2 branches missed.">                if (err == 1) System.out.println(&quot;1 line was invalid.&quot;);</span>
+<span class="fc" id="L1206">                else System.out.println(err + &quot; lines were invalid.&quot;);</span>
+            }
+<span class="fc" id="L1208">        } catch (IOException e) {</span>
+<span class="fc" id="L1209">            System.out.println(&quot;Error reading file.&quot;);</span>
+<span class="fc" id="L1210">            return;</span>
+<span class="fc" id="L1211">        }</span>
+<span class="fc" id="L1212">    }</span>
+
+    // flight export &lt;filename&gt;
+    // The method of writing to a file is taken from w3schools
+    // https://www.w3schools.com/java/java_files_create.asp
+    public void exportFlights(String[] command) {
+        try {
+<span class="fc bfc" id="L1219" title="All 2 branches covered.">            if (command.length &lt; 3) throw new FileNotFoundException();</span>
+            // Create the file if not exist
+<span class="fc" id="L1221">            File flight_file = new File(command[2]);</span>
+<span class="fc" id="L1222">            flight_file.createNewFile();</span>
+<span class="fc" id="L1223">            int counter = 0;</span>
+<span class="fc" id="L1224">            FileWriter F_file = new FileWriter(command[2], true);</span>
+<span class="fc bfc" id="L1225" title="All 2 branches covered.">            for (Flight f : list_of_flights) {</span>
+<span class="fc" id="L1226">                F_file.write(f.flight_toString());</span>
+<span class="fc" id="L1227">                counter++;</span>
+<span class="fc" id="L1228">            }</span>
+<span class="fc" id="L1229">            F_file.close();</span>
+<span class="pc bpc" id="L1230" title="1 of 2 branches missed.">            System.out.println(&quot;Exported &quot; + counter + &quot; flight&quot; + (counter != 1 ? &quot;s&quot; : &quot;&quot;) + &quot;.&quot;);</span>
+<span class="fc" id="L1231">        } catch (IOException e) {</span>
+<span class="fc" id="L1232">            System.out.println(&quot;Error reading file.&quot;);</span>
+<span class="fc" id="L1233">            return;</span>
+<span class="fc" id="L1234">        }</span>
+<span class="fc" id="L1235">    }</span>
+
+    //location import &lt;filename&gt;
+    public void importLocations(String[] command) {
+        try {
+<span class="fc bfc" id="L1240" title="All 2 branches covered.">            if (command.length &lt; 3) throw new FileNotFoundException();</span>
+<span class="fc" id="L1241">            BufferedReader br = new BufferedReader(new FileReader(new File(command[2])));</span>
+            String line;
+<span class="fc" id="L1243">            int count = 0;</span>
+<span class="fc" id="L1244">            int err = 0;</span>
+
+<span class="fc bfc" id="L1246" title="All 2 branches covered.">            while ((line = br.readLine()) != null) {</span>
+<span class="fc" id="L1247">                String[] lparts = line.split(&quot;,&quot;);</span>
+<span class="pc bpc" id="L1248" title="1 of 2 branches missed.">                if (lparts.length &lt; 4) continue;</span>
+
+<span class="fc" id="L1250">                int status = addLocation(lparts[0], lparts[1], lparts[2], lparts[3]);</span>
+<span class="fc bfc" id="L1251" title="All 2 branches covered.">                if (status &lt; 0) {</span>
+<span class="fc" id="L1252">                    err++;</span>
+<span class="fc" id="L1253">                    continue;</span>
+                }
+<span class="fc" id="L1255">                count++;</span>
+<span class="fc" id="L1256">            }</span>
+<span class="fc" id="L1257">            br.close();</span>
+<span class="pc bpc" id="L1258" title="1 of 2 branches missed.">            System.out.println(&quot;Imported &quot; + count + &quot; location&quot; + (count != 1 ? &quot;s&quot; : &quot;&quot;) + &quot;.&quot;);</span>
+<span class="fc bfc" id="L1259" title="All 2 branches covered.">            if (err &gt; 0) {</span>
+<span class="pc bpc" id="L1260" title="1 of 2 branches missed.">                if (err == 1) System.out.println(&quot;1 line was invalid.&quot;);</span>
+<span class="fc" id="L1261">                else System.out.println(err + &quot; lines were invalid.&quot;);</span>
+            }
+
+<span class="fc" id="L1264">        } catch (IOException e) {</span>
+<span class="fc" id="L1265">            System.out.println(&quot;Error writing file.&quot;);</span>
+<span class="fc" id="L1266">            return;</span>
+<span class="fc" id="L1267">        }</span>
+<span class="fc" id="L1268">    }</span>
+
+    // location export &lt;filename&gt;
+    // The method of writing to a file is taken from w3schools
+    // https://www.w3schools.com/java/java_files_create.asp
+    public void exportLocations(String[] command) {
+        try {
+<span class="fc" id="L1275">            int counter = 0;</span>
+<span class="fc bfc" id="L1276" title="All 2 branches covered.">            if (command.length &lt; 3) throw new FileNotFoundException();</span>
+<span class="fc" id="L1277">            File location_file = new File(command[2]);</span>
+<span class="fc" id="L1278">            location_file.createNewFile();</span>
+<span class="fc" id="L1279">            FileWriter L_file = new FileWriter(command[2], true);</span>
+<span class="fc bfc" id="L1280" title="All 2 branches covered.">            for (Location l : list_of_locations) {</span>
+<span class="fc" id="L1281">                L_file.write(l.location_toString());</span>
+<span class="fc" id="L1282">                counter++;</span>
+<span class="fc" id="L1283">            }</span>
+<span class="fc" id="L1284">            L_file.close();</span>
+<span class="fc bfc" id="L1285" title="All 2 branches covered.">            System.out.println(&quot;Exported &quot; + counter + &quot; location&quot; + (counter != 1 ? &quot;s&quot; : &quot;&quot;) + &quot;.&quot;);</span>
+<span class="fc" id="L1286">        } catch (IOException e) {</span>
+<span class="fc" id="L1287">            System.out.println(&quot;Error reading file.&quot;);</span>
+<span class="fc" id="L1288">            return;</span>
+<span class="fc" id="L1289">        }</span>
+<span class="fc" id="L1290">    }</span>
+
+    // Error case checking!
+    // 1) Time added was not in the correct format, for example “Monday 18:00”
+    public static boolean is_valid_day(String day) {
+<span class="fc" id="L1295">        boolean is_valid = false;</span>
+<span class="fc bfc" id="L1296" title="All 4 branches covered.">        if (day.equalsIgnoreCase(&quot;Monday&quot;) || day.equalsIgnoreCase(&quot;Tuesday&quot;)</span>
+<span class="fc bfc" id="L1297" title="All 4 branches covered.">                || day.equalsIgnoreCase(&quot;Wednesday&quot;) || day.equalsIgnoreCase(&quot;Thursday&quot;)</span>
+<span class="fc bfc" id="L1298" title="All 4 branches covered.">                || day.equalsIgnoreCase(&quot;Friday&quot;) || day.equalsIgnoreCase(&quot;Saturday&quot;)</span>
+<span class="fc bfc" id="L1299" title="All 2 branches covered.">                || day.equalsIgnoreCase(&quot;Sunday&quot;)) {</span>
+<span class="fc" id="L1300">            is_valid = true;</span>
+        }
+<span class="fc" id="L1302">        return is_valid;</span>
+    }
+
+    public static boolean is_valid_time(String time) {
+<span class="fc" id="L1306">        boolean is_valid = true;</span>
+        // The method of checking if time format is correct is taken from StackOverflow
+        // https://stackoverflow.com/questions/40940991/how-to-check-if-time-format-is-correct-in-java-with-exception
+<span class="fc" id="L1309">        DateTimeFormatter time_Formatter = DateTimeFormatter.ofPattern(&quot;H:mm&quot;)</span>
+<span class="fc" id="L1310">                .withResolverStyle(ResolverStyle.STRICT);</span>
+        try {
+<span class="fc" id="L1312">            LocalTime.parse(time, time_Formatter);</span>
+<span class="fc" id="L1313">        } catch (DateTimeParseException | NullPointerException e) {</span>
+<span class="fc" id="L1314">            is_valid = false;</span>
+<span class="fc" id="L1315">        }</span>
+<span class="fc" id="L1316">        return is_valid;</span>
+    }
+
+    // 2) Check if the location was in the database.
+    public static Location is_location_exist(String name, ArrayList&lt;Location&gt; location_list) {
+<span class="fc bfc" id="L1321" title="All 2 branches covered.">        for (Location l : location_list) {</span>
+<span class="fc bfc" id="L1322" title="All 2 branches covered.">            if (name.equalsIgnoreCase(l.getLocation_name())) {</span>
+<span class="fc" id="L1323">                return l;</span>
+            }
+<span class="fc" id="L1325">        }</span>
+<span class="fc" id="L1326">        return null;</span>
+    }
+
+    // 3) Flight ID was not in the database
+    public static boolean is_id_exist(int id, ArrayList&lt;Flight&gt; flight_list) {
+        try {
+<span class="fc bfc" id="L1332" title="All 2 branches covered.">            for (Flight f : flight_list) {</span>
+<span class="fc bfc" id="L1333" title="All 2 branches covered.">                if (id == f.getFlight_id()) {</span>
+<span class="fc" id="L1334">                    return true;</span>
+                }
+<span class="fc" id="L1336">            }</span>
+<span class="nc" id="L1337">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L1338">            return false;</span>
+<span class="fc" id="L1339">        }</span>
+<span class="fc" id="L1340">        return false;</span>
+    }
+
+    // 4) Location is already present in the database (case insensitive based on name)
+    public static boolean locationExist(String name, ArrayList&lt;Location&gt; location_list) {
+<span class="fc bfc" id="L1345" title="All 2 branches covered.">        for (Location l : location_list) {</span>
+<span class="fc bfc" id="L1346" title="All 2 branches covered.">            if (name.equalsIgnoreCase(l.getLocation_name())) {</span>
+<span class="fc" id="L1347">                return true;</span>
+            }
+<span class="fc" id="L1349">        }</span>
+<span class="fc" id="L1350">        return false;</span>
+    }
+
+    // Helper functions
+
+    // 1) Sort flight list ordered by departure time, then departure location name
+    // The method of sorting an array list is taken from StackOverflow &amp; a little bit help from intelliJ I guess...
+    // https://stackoverflow.com/questions/14154127/collections-sortlistt-comparator-super-t-method-example
+    public static ArrayList&lt;Flight&gt; sorted(ArrayList&lt;Flight&gt; sorted) {
+<span class="fc" id="L1359">        sorted.sort((o1, o2) -&gt; {</span>
+<span class="fc bfc" id="L1360" title="All 2 branches covered.">            if (o1.getDep_dayofWeek().compareTo(o2.getDep_dayofWeek()) == 0) {</span>
+<span class="pc bpc" id="L1361" title="1 of 2 branches missed.">                if (o1.getDep_local_time().compareTo(o2.getDep_local_time()) == 0) {</span>
+<span class="nc" id="L1362">                    String o1_depLocation = o1.getDep_location().getLocation_name().toLowerCase();</span>
+<span class="nc" id="L1363">                    String o2_depLocation = o2.getDep_location().getLocation_name().toLowerCase();</span>
+<span class="nc" id="L1364">                    return o1_depLocation.charAt(0) - o2_depLocation.charAt(0);</span>
+                } else {
+<span class="fc" id="L1366">                    return o1.getDep_local_time().compareTo(o2.getDep_local_time());</span>
+                }
+            } else {
+<span class="fc" id="L1369">                return o1.getDep_dayofWeek().compareTo(o2.getDep_dayofWeek());</span>
+            }
+        });
+<span class="fc" id="L1372">        return sorted;</span>
+    }
+
+    // 2）Sort location list in alphabetical order
+    public static ArrayList&lt;Location&gt; sort_locations(ArrayList&lt;Location&gt; sorted) {
+<span class="fc" id="L1377">        sorted.sort((o1, o2) -&gt; {</span>
+<span class="fc" id="L1378">            String o1_location = o1.getLocation_name();</span>
+<span class="fc" id="L1379">            String o2_location = o2.getLocation_name();</span>
+<span class="fc" id="L1380">            return o1_location.compareToIgnoreCase(o2_location);</span>
+        });
+<span class="fc" id="L1382">        return sorted;</span>
+    }
+
+    // 3) Sort all departing and arriving flights, in order of the time they arrive/depart
+    public static ArrayList&lt;Flight&gt; sort_flights(ArrayList&lt;Flight&gt; sorted, Location l) {
+<span class="fc" id="L1387">        sorted.sort((o1, o2) -&gt; {</span>
+<span class="fc" id="L1388">            DayOfWeek o1_day = null;</span>
+<span class="fc" id="L1389">            LocalTime o1_time = null;</span>
+<span class="fc" id="L1390">            DayOfWeek o2_day = null;</span>
+<span class="fc" id="L1391">            LocalTime o2_time = null;</span>
+<span class="fc bfc" id="L1392" title="All 2 branches covered.">            if (o1.getArr_location() == l) {</span>
+<span class="fc" id="L1393">                o1_day = Flight.arrival_day_week(o1);</span>
+<span class="fc" id="L1394">                o1_time = Flight.arrival_l_time(o1);</span>
+            }
+<span class="fc bfc" id="L1396" title="All 2 branches covered.">            if (o2.getArr_location() == l) {</span>
+<span class="fc" id="L1397">                o2_day = Flight.arrival_day_week(o2);</span>
+<span class="fc" id="L1398">                o2_time = Flight.arrival_l_time(o2);</span>
+            }
+<span class="fc bfc" id="L1400" title="All 2 branches covered.">            if (o1.getDep_location() == l) {</span>
+<span class="fc" id="L1401">                o1_day = o1.getDep_dayofWeek();</span>
+<span class="fc" id="L1402">                o1_time = o1.getDep_local_time();</span>
+            }
+<span class="fc bfc" id="L1404" title="All 2 branches covered.">            if (o2.getDep_location() == l) {</span>
+<span class="fc" id="L1405">                o2_day = o2.getDep_dayofWeek();</span>
+<span class="fc" id="L1406">                o2_time = o2.getDep_local_time();</span>
+            }
+<span class="fc bfc" id="L1408" title="All 2 branches covered.">            if (o1_day == o2_day) {</span>
+<span class="fc" id="L1409">                return o1_time.compareTo(o2_time);</span>
+            } else {
+<span class="fc" id="L1411">                return o1_day.compareTo(o2_day);</span>
+            }
+
+        });
+<span class="fc" id="L1415">        return sorted;</span>
+    }
+
+    // 4) Sort all departing flights, in order of departure time
+    public static ArrayList&lt;Flight&gt; sort_dep(ArrayList&lt;Flight&gt; sorted) {
+<span class="fc" id="L1420">        sorted.sort((o1, o2) -&gt; {</span>
+<span class="fc bfc" id="L1421" title="All 2 branches covered.">            if (o1.getDep_dayofWeek().compareTo(o2.getDep_dayofWeek()) == 0) {</span>
+<span class="fc" id="L1422">                return o1.getDep_local_time().compareTo(o2.getDep_local_time());</span>
+            } else {
+<span class="fc" id="L1424">                return o1.getDep_dayofWeek().compareTo(o2.getDep_dayofWeek());</span>
+            }
+        });
+<span class="fc" id="L1427">        return sorted;</span>
+    }
+
+    // 5) Sort all arriving flights, in order of arrival time
+    public static ArrayList&lt;Flight&gt; sort_arr(ArrayList&lt;Flight&gt; sorted) {
+<span class="fc" id="L1432">        sorted.sort((o1, o2) -&gt; {</span>
+<span class="fc bfc" id="L1433" title="All 2 branches covered.">            if (Flight.arrival_day_week(o1).compareTo(Flight.arrival_day_week(o2)) == 0) {</span>
+<span class="fc" id="L1434">                return Flight.arrival_l_time(o1).compareTo(Flight.arrival_l_time(o2));</span>
+            } else {
+<span class="fc" id="L1436">                return Flight.arrival_day_week(o1).compareTo(Flight.arrival_day_week(o2));</span>
+            }
+        });
+<span class="fc" id="L1439">        return sorted;</span>
+    }
+
+    // 6) This is for printing -- &quot;Travel&quot; command
+    public static void print_for_travel() {
+<span class="fc" id="L1444">        System.out.println(&quot;-------------------------------------------------------------&quot;);</span>
+<span class="fc" id="L1445">        System.out.println(&quot;ID   Cost      Departure   Arrival     Source --&gt; Destination&quot;);</span>
+<span class="fc" id="L1446">        System.out.println(&quot;-------------------------------------------------------------&quot;);</span>
+<span class="fc" id="L1447">    }</span>
+
+    public static void print_for_travel_two(ArrayList&lt;ArrayList&lt;Flight&gt;&gt; routes, int index) {
+        // get the duration
+<span class="fc" id="L1451">        int total_duration = 0;</span>
+<span class="fc bfc" id="L1452" title="All 2 branches covered.">        for (Flight f : routes.get(index)) {</span>
+<span class="fc" id="L1453">            total_duration = total_duration + f.getDuration();</span>
+<span class="fc" id="L1454">        }</span>
+        // Add layover time
+<span class="fc bfc" id="L1456" title="All 2 branches covered.">        for (int k = 0; k &lt; routes.get(index).size() - 1; k++) {</span>
+<span class="fc" id="L1457">            total_duration = total_duration + Flight.layover(routes.get(index).get(k), routes.get(index).get(k + 1));</span>
+        }
+<span class="fc" id="L1459">        int h = total_duration / 60;</span>
+<span class="fc" id="L1460">        int m = total_duration % 60;</span>
+<span class="fc" id="L1461">        double cost = 0;</span>
+        // Get total cost
+<span class="fc bfc" id="L1463" title="All 2 branches covered.">        for (Flight f1 : routes.get(index)) {</span>
+<span class="fc" id="L1464">            cost = cost + f1.getTicketPrice();</span>
+<span class="fc" id="L1465">        }</span>
+<span class="fc" id="L1466">        System.out.printf(&quot;Legs:             %d\n&quot;, routes.get(index).size());</span>
+<span class="fc" id="L1467">        System.out.printf(&quot;Total Duration:   %dh %dm\n&quot;, h, m);</span>
+<span class="fc" id="L1468">        System.out.printf(&quot;Total Cost:       $%.2f\n&quot;, cost);</span>
+<span class="fc" id="L1469">        print_for_travel();</span>
+<span class="fc" id="L1470">        int counter = 1;</span>
+<span class="fc bfc" id="L1471" title="All 2 branches covered.">        for (int j = 0; j &lt; routes.get(index).size(); j++) {</span>
+<span class="fc bfc" id="L1472" title="All 2 branches covered.">            if (counter &lt; routes.get(index).size()) {</span>
+<span class="fc" id="L1473">                print_detail(routes.get(index).get(j));</span>
+<span class="fc" id="L1474">                int layover_time = Flight.layover(routes.get(index).get(j), routes.get(index).get(j + 1));</span>
+<span class="fc" id="L1475">                int hours = layover_time / 60;</span>
+<span class="fc" id="L1476">                int minuets = layover_time % 60;</span>
+<span class="fc" id="L1477">                System.out.printf(&quot;LAYOVER %dh %dm at %s\n&quot;, hours, minuets,</span>
+<span class="fc" id="L1478">                        routes.get(index).get(j).getArr_location().getLocation_name());</span>
+<span class="fc" id="L1479">                counter++;</span>
+<span class="fc" id="L1480">            } else {</span>
+<span class="fc" id="L1481">                print_detail(routes.get(index).get(j));</span>
+            }
+        }
+<span class="fc" id="L1484">    }</span>
+
+    public static void print_detail(Flight f) {
+<span class="fc" id="L1487">        System.out.printf(&quot;%4d $%8.2f %s %s   %s %s   %s --&gt; %s\n&quot;, f.getFlight_id(),</span>
+<span class="fc" id="L1488">                f.getTicketPrice(), f.getDep_dayofWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()),</span>
+<span class="fc" id="L1489">                f.getDep_local_time().toString(), Flight.arrival_day_week(f).getDisplayName(TextStyle.SHORT, Locale.getDefault()),</span>
+<span class="fc" id="L1490">                Flight.arrival_l_time(f).toString(), f.getDep_location().getLocation_name(), f.getArr_location().getLocation_name());</span>
+<span class="fc" id="L1491">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,45 @@
+User: Imported 51 locations.
+
+User: Successfully added Flight 0.
+
+User: Successfully added Flight 1.
+
+User: Successfully added Flight 2.
+
+User: Flights
+-------------------------------------------------------
+ID   Departure   Arrival     Source --> Destination
+-------------------------------------------------------
+   0 Wed 06:00   Wed 10:31   Sydney --> Perth
+   1 Wed 08:00   Wed 12:31   Sydney --> Perth
+   2 Wed 11:31   Wed 23:03   Perth --> Johannesburg
+
+User: Usage:
+FLIGHT <id> [BOOK/REMOVE/RESET] [num]
+FLIGHT ADD <departure time> <from> <to> <capacity>
+FLIGHT IMPORT/EXPORT <filename>
+
+User:  Invalid Flight ID.
+
+User: Invalid Flight ID.
+
+User: Invalid Flight ID.
+
+User: Removed Flight 0, Wed 06:00 Sydney --> Perth, from the flight schedule.
+
+User: Flights
+-------------------------------------------------------
+ID   Departure   Arrival     Source --> Destination
+-------------------------------------------------------
+   1 Wed 08:00   Wed 12:31   Sydney --> Perth
+   2 Wed 11:31   Wed 23:03   Perth --> Johannesburg
+
+User: Removed Flight 1, Wed 08:00 Sydney --> Perth, from the flight schedule.
+
+User: Flights
+-------------------------------------------------------
+ID   Departure   Arrival     Source --> Destination
+-------------------------------------------------------
+   2 Wed 11:31   Wed 23:03   Perth --> Johannesburg
+
+User: Application closed.

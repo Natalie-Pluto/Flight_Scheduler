@@ -1,0 +1,19 @@
+User: Error writing file.
+
+User: Usage:
+LOCATION <name>
+LOCATION ADD <name> <latitude> <longitude> <demand_coefficient>
+LOCATION IMPORT/EXPORT <filename>
+
+User: Invalid location name.
+
+User: Error writing file.
+
+User: Error writing file.
+
+User: Imported 51 locations.
+
+User: Imported 0 locations.
+51 lines were invalid.
+
+User: Application closed.

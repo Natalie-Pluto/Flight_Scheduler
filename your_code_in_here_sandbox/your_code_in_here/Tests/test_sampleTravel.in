@@ -1,0 +1,11 @@
+location import locations.csv
+location import locations4.csv
+flight import flights6.csv
+travel sydney london
+travel mars london
+travel london moon
+travel
+location add shanghai 31.23 121.47 0.5
+location add Hongkong 22.32 114.17 0.5
+travel shanghai Hongkong
+exit

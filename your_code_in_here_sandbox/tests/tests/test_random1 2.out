@@ -1,0 +1,98 @@
+User: Imported 51 locations.
+User: Imported 2 locations.
+
+User: Imported 182 flights.
+
+User: Sydney
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+ 166 Mon 10:30   Departure to Dubai
+ 100 Mon 12:00   Departure to Jakarta
+ 103 Mon 13:33   Arrival from AbuDhabi
+  89 Mon 19:00   Departure to Hobart
+  90 Mon 21:30   Departure to Hobart
+ 173 Tue 02:38   Arrival from AliceSprings
+ 174 Tue 04:00   Departure to AliceSprings
+  69 Tue 05:00   Departure to LosAngeles
+  99 Tue 08:27   Arrival from Hobart
+   0 Wed 09:00   Departure to Beijing
+   5 Wed 10:00   Departure to AbuDhabi
+ 161 Wed 11:00   Departure to LosAngeles
+ 162 Wed 13:00   Departure to Dubbo
+ 165 Wed 15:23   Arrival from Dubbo
+ 163 Wed 18:00   Departure to Orange
+ 164 Wed 20:14   Arrival from Orange
+   6 Thu 04:44   Arrival from AbuDhabi
+   3 Thu 11:11   Arrival from Hanoi
+ 131 Fri 14:00   Departure to AbuDhabi
+ 113 Sat 04:00   Departure to Perth
+ 114 Sat 06:00   Departure to Perth
+ 112 Sat 09:00   Departure to Perth
+
+User: Sydney
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+ 103 Mon 13:33   Arrival from AbuDhabi
+ 173 Tue 02:38   Arrival from AliceSprings
+  99 Tue 08:27   Arrival from Hobart
+ 165 Wed 15:23   Arrival from Dubbo
+ 164 Wed 20:14   Arrival from Orange
+   6 Thu 04:44   Arrival from AbuDhabi
+   3 Thu 11:11   Arrival from Hanoi
+
+User: Sydney
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+ 166 Mon 10:30   Departure to Dubai
+ 100 Mon 12:00   Departure to Jakarta
+  89 Mon 19:00   Departure to Hobart
+  90 Mon 21:30   Departure to Hobart
+ 174 Tue 04:00   Departure to AliceSprings
+  69 Tue 05:00   Departure to LosAngeles
+   0 Wed 09:00   Departure to Beijing
+   5 Wed 10:00   Departure to AbuDhabi
+ 161 Wed 11:00   Departure to LosAngeles
+ 162 Wed 13:00   Departure to Dubbo
+ 163 Wed 18:00   Departure to Orange
+ 131 Fri 14:00   Departure to AbuDhabi
+ 113 Sat 04:00   Departure to Perth
+ 114 Sat 06:00   Departure to Perth
+ 112 Sat 09:00   Departure to Perth
+
+User: Perth
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+ 169 Mon 17:52   Arrival from AliceSprings
+ 113 Sat 08:31   Arrival from Sydney
+ 114 Sat 10:31   Arrival from Sydney
+ 112 Sat 13:31   Arrival from Sydney
+
+User: Perth
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+ 145 Mon 00:00   Departure to Johannesburg
+ 171 Mon 15:05   Departure to AliceSprings
+ 170 Mon 16:05   Departure to AliceSprings
+ 115 Thu 06:00   Departure to Mumbai
+ 132 Fri 13:00   Departure to AbuDhabi
+
+User: Perth
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+ 145 Mon 00:00   Departure to Johannesburg
+ 171 Mon 15:05   Departure to AliceSprings
+ 170 Mon 16:05   Departure to AliceSprings
+ 169 Mon 17:52   Arrival from AliceSprings
+ 115 Thu 06:00   Departure to Mumbai
+ 132 Fri 13:00   Departure to AbuDhabi
+ 113 Sat 08:31   Arrival from Sydney
+ 114 Sat 10:31   Arrival from Sydney
+ 112 Sat 13:31   Arrival from Sydney
+
+User: Application closed.

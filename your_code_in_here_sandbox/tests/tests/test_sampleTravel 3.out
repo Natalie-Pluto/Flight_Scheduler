@@ -1,0 +1,31 @@
+User: Imported 51 locations.
+
+User: Imported 2 locations.
+
+User: Imported 182 flights.
+
+User: Legs:             3
+Total Duration:   34h 36m
+Total Cost:       $5172.49
+-------------------------------------------------------------
+ID   Cost      Departure   Arrival     Source --> Destination
+-------------------------------------------------------------
+   5 $ 3399.00 Wed 10:00   Thu 02:44   Sydney --> AbuDhabi
+LAYOVER 1h 16m at AbuDhabi
+  10 $ 1384.44 Thu 04:00   Thu 11:11   AbuDhabi --> Oslo
+LAYOVER 7h 49m at Oslo
+  20 $  389.05 Thu 19:00   Thu 20:36   Oslo --> London
+
+User: Starting location not found.
+
+User: Ending location not found.
+
+User: Usage: TRAVEL <from> <to> [cost/duration/stopovers/layover/flight_time]
+
+User: Successfully added location shanghai.
+
+User: Successfully added location Hongkong.
+
+User: Sorry, no flights with 3 or less stopovers are available from shanghai to Hongkong.
+
+User: Application closed.

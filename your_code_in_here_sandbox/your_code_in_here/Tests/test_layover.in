@@ -1,0 +1,11 @@
+location import locations1.csv
+flight import flights5.csv
+travel mars sydney layover 
+travel Sydney mars layover   
+location add shanghai 31.23 121.47 0.5
+location add Hongkong 22.32 114.17 0.5
+travel shanghai Hongkong layover
+travel sydney london layover
+travel sydney london bala
+travel sydney london layover 1
+exit

@@ -1,0 +1,5 @@
+location add Berlin 52.5 13.15 0.22222
+location add NewYork 40.7 -74.26 -0.874
+flight add sunday 20:00 Berlin NewYork 250
+flight add tuesday 10:00 NewYork Berlin 200
+exit

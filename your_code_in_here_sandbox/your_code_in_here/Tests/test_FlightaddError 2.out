@@ -1,0 +1,44 @@
+User: Successfully added location Berlin.
+
+User: Successfully added location NewYork.
+
+User: flight add sunday 20:6 Berlin NewYork 250
+
+User: flight add sunday 200:00 Berlin NewYork 250
+
+User: Invalid departure time. Use the format <day_of_week> <hour:minute>, with 24h time.
+
+User: Invalid departure time. Use the format <day_of_week> <hour:minute>, with 24h time.
+
+User: Invalid starting location.
+
+User: Invalid ending location.
+
+User: Invalid positive integer capacity.
+ 
+User: Source and destination cannot be the same place.
+
+User: Successfully added Flight 0.
+
+User: Scheduling conflict! This flight clashes with Flight 0 departing from Berlin on Sunday 20:00.
+
+User: Scheduling conflict! This flight clashes with Flight 0 arriving at NewYork on Monday 04:52.
+
+User: Usage:   FLIGHT ADD <departure time> <from> <to> <capacity>
+Example: FLIGHT ADD Monday 18:00 Sydney Melbourne 120
+
+User: Usage:   FLIGHT ADD <departure time> <from> <to> <capacity>
+Example: FLIGHT ADD Monday 18:00 Sydney Melbourne 120
+
+User: Usage:   FLIGHT ADD <departure time> <from> <to> <capacity>
+Example: FLIGHT ADD Monday 18:00 Sydney Melbourne 120
+
+User: Usage:   FLIGHT ADD <departure time> <from> <to> <capacity>
+Example: FLIGHT ADD Monday 18:00 Sydney Melbourne 120
+
+User: Usage:   FLIGHT ADD <departure time> <from> <to> <capacity>
+Example: FLIGHT ADD Monday 18:00 Sydney Melbourne 120
+
+User: Successfully added Flight 1.
+
+User: Application closed.

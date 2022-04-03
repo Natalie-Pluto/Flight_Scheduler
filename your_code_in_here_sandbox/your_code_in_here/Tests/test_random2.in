@@ -1,0 +1,11 @@
+location import locations.csv
+flight add wednesday 5:59 sydney perth 180
+flight add wednesday 8:01 sydney perth 180
+flight add wednesday 7:00 sydney perth 180
+flight add wednesday 8:30 sydney perth 180
+flight add wednesday 6:30 sydney perth 180
+flight add Monday 8:00 London Beijing 180
+flight 0 book 200
+flight 1 book 180
+flight 0 book 20
+exit

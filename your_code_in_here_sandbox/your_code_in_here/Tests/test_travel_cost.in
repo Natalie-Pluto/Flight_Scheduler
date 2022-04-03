@@ -1,0 +1,11 @@
+location import locations1.csv
+flight import flights5.csv
+travel mars sydney cost 
+travel Sydney mars cost 
+location add shanghai 31.23 121.47 0.5
+location add Hongkong 22.32 114.17 0.5
+travel shanghai Hongkong cost
+travel sydney london cost
+travel sydney london bala
+travel sydney london cost 1
+exit

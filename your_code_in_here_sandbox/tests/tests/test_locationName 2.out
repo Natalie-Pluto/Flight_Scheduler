@@ -1,0 +1,24 @@
+User: Usage:
+LOCATION <name>
+LOCATION ADD <name> <latitude> <longitude> <demand_coefficient>
+LOCATION IMPORT/EXPORT <filename>
+
+User: Invalid location name.
+
+User: Successfully added location NewYork.
+
+User:Successfully added location Berlin.
+
+User: Location:    NewYork
+Latitude:    40.700000
+Longitude:   -74.260000
+Demand:      -0.8740
+
+User: Location:    Berlin
+Latitude:    52.500000
+Longitude:   13.150000
+Demand:      +0.2222
+
+User: Invalid location name.
+
+User: Application closed.

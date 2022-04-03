@@ -1,0 +1,58 @@
+User: Flights
+-------------------------------------------------------
+ID   Departure   Arrival     Source --> Destination
+-------------------------------------------------------
+(None)
+
+User: Successfully added location Berlin.
+
+User: Successfully added location NewYork.
+
+User: Successfully added Flight 0.
+
+User: Flights
+-------------------------------------------------------
+ID   Departure   Arrival     Source --> Destination
+-------------------------------------------------------
+   0 Sun 20:00   Mon 04:52   Berlin --> NewYork
+
+User: Imported 49 locations.
+2 lines were invalid.
+
+User: Successfully added Flight 1.
+
+User: Successfully added Flight 2.
+
+User: Successfully added Flight 3.
+
+User: Successfully added Flight 4.
+
+User: Successfully added Flight 5.
+
+User: Successfully added Flight 6.
+
+User: Flights
+-------------------------------------------------------
+ID   Departure   Arrival     Source --> Destination
+-------------------------------------------------------
+   1 Wed 06:00   Wed 10:31   Sydney --> Perth
+   2 Wed 08:00   Wed 12:31   Sydney --> Perth
+   3 Wed 11:31   Wed 23:03   Perth --> Johannesburg
+   4 Thu 01:00   Thu 13:36   Johannesburg --> London
+   5 Fri 01:00   Fri 13:36   Johannesburg --> London
+   6 Sat 01:00   Sat 13:36   Johannesburg --> London
+   0 Sun 20:00   Mon 04:52   Berlin --> NewYork
+
+User: Flights
+-------------------------------------------------------
+ID   Departure   Arrival     Source --> Destination
+-------------------------------------------------------
+   1 Wed 06:00   Wed 10:31   Sydney --> Perth
+   2 Wed 08:00   Wed 12:31   Sydney --> Perth
+   3 Wed 11:31   Wed 23:03   Perth --> Johannesburg
+   4 Thu 01:00   Thu 13:36   Johannesburg --> London
+   5 Fri 01:00   Fri 13:36   Johannesburg --> London
+   6 Sat 01:00   Sat 13:36   Johannesburg --> London
+   0 Sun 20:00   Mon 04:52   Berlin --> NewYork
+  
+User: Application closed.

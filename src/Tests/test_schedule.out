@@ -1,0 +1,25 @@
+User: This location does not exist in the system.
+
+User: Usage:
+SCHEDULE <location_name>
+
+User: Successfully added location Berlin.
+
+User: Successfully added location NewYork.
+
+User: Successfully added Flight 0.
+
+User: Successfully added Flight 1.
+
+User: This location does not exist in the system.
+
+User: This location does not exist in the system.
+
+User: Berlin
+-------------------------------------------------------
+ID   Time        Departure/Arrival to/from Location
+-------------------------------------------------------
+   1 Wed 04:52   Arrival from NewYork
+   0 Sun 20:00   Departure to NewYork
+
+User: Application closed.

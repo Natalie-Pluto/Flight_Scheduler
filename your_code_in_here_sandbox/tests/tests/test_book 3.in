@@ -1,0 +1,17 @@
+flight 0 book 20
+flight 0 book
+location import locations.csv
+flight add wednesday 6:00 sydney perth 180
+flight add wednesday 8:00 sydney perth 180
+flight 0 book 20
+flight 3 book 20
+flight -1 book 20
+flight 0 book -20
+flight 0 book x
+flight 0 book 2.3
+flight 0 book 20.0
+flight 0 book 130
+flight 0 book 9 balabalaba
+flight 0 book 
+flight 0 book 10
+exit

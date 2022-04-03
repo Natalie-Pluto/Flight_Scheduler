@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Flight.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Coverage Report</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Flight.java</span></div><h1>Flight.java</h1><pre class="source lang-java linenums">import java.lang.*;
+import java.time.LocalTime;
+import java.time.DayOfWeek;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
+import java.util.Locale;
+
+public class Flight {
+    private int flight_id;
+    private String dep_time;
+    private DayOfWeek dep_dayofWeek;
+    private LocalTime dep_local_time;
+    private Location dep_location;
+    private Location arr_location;
+    private int capacity;
+    private double ticketPrice;
+    private int num_of_booked;
+
+    // Create a constructor
+<span class="fc" id="L22">    public Flight (int flight_id, String dep_time, Location dep_location, Location arr_location, int capacity) {</span>
+<span class="fc" id="L23">        DateTimeFormatter time_Formatter = DateTimeFormatter.ofPattern(&quot;H:mm&quot;)</span>
+<span class="fc" id="L24">                .withResolverStyle(ResolverStyle.STRICT);</span>
+<span class="fc" id="L25">        this.flight_id = flight_id;</span>
+<span class="fc" id="L26">        this.dep_time = dep_time;</span>
+<span class="fc" id="L27">        this.dep_dayofWeek = DayOfWeek.valueOf((dep_time.split(&quot; &quot;)[0]).toUpperCase());</span>
+<span class="fc" id="L28">        this.dep_local_time = LocalTime.parse(dep_time.split(&quot; &quot;)[1], time_Formatter);</span>
+<span class="fc" id="L29">        this.dep_location = dep_location;</span>
+<span class="fc" id="L30">        this.arr_location = arr_location;</span>
+<span class="fc" id="L31">        this.capacity = capacity;</span>
+<span class="fc" id="L32">        this.num_of_booked = 0;</span>
+<span class="fc" id="L33">    }</span>
+
+    //get the number of minutes this flight takes (round to nearest whole number)
+    public int getDuration() {
+        // Get the distance between the start and end locations by calling the getDistance() method
+<span class="fc" id="L38">        double distance = getDistance();</span>
+        // Assuming the average speed of an aircraft is 720km/h.
+<span class="fc" id="L40">        int speed = 720/60;</span>
+        // Do the calculation (To the nearest whole num!) :)
+<span class="fc" id="L42">        int duration = (int) Math.round(distance/speed);</span>
+<span class="fc" id="L43">        return duration;</span>
+    }
+
+    // Get the local time of the arriving time
+    public static LocalTime arrival_l_time(Flight f) {
+<span class="fc" id="L48">        LocalTime arr_local_time = f.dep_local_time.plusMinutes(f.getDuration());</span>
+<span class="fc" id="L49">        return arr_local_time;</span>
+    }
+
+    // Get the day of week of the arriving time
+    public static DayOfWeek arrival_day_week(Flight f) {
+        DayOfWeek arr_day_of_week;
+<span class="fc" id="L55">        int value = arrival_l_time(f).compareTo(f.dep_local_time);</span>
+        // If the arrival time is in the next day:
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if(value &lt; 0) {</span>
+            // If it's departure time was on Sunday...
+<span class="fc bfc" id="L59" title="All 2 branches covered.">            if (f.dep_dayofWeek.getValue() == 7) {</span>
+<span class="fc" id="L60">                arr_day_of_week = DayOfWeek.valueOf(&quot;MONDAY&quot;);</span>
+            }
+            else {
+<span class="fc" id="L63">                arr_day_of_week = DayOfWeek.of((f.dep_dayofWeek.getValue() + 1));</span>
+            }
+        }
+        // If the arrival time is not in the next day:
+        else {
+<span class="fc" id="L68">            arr_day_of_week = f.dep_dayofWeek;</span>
+        }
+<span class="fc" id="L70">        return arr_day_of_week;</span>
+    }
+
+    //implement the ticket price formula
+    public double getTicketPrice() {
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (num_of_booked == 0) {</span>
+<span class="fc" id="L76">            ticketPrice = (30 + 4 * (arr_location.getDemand_coe() - dep_location.getDemand_coe())) * (getDistance()/100);</span>
+<span class="fc" id="L77">            setTicketPrice(ticketPrice);</span>
+<span class="fc" id="L78">            return ticketPrice;</span>
+        }
+        // The demand coefficient differential between locations
+<span class="fc" id="L81">        double diff_coe = arr_location.getDemand_coe() - dep_location.getDemand_coe();</span>
+        // Proportion of seats filled (booked/capacity)
+<span class="fc" id="L83">        double x = (double) num_of_booked/capacity;</span>
+        // Multiplier for ticket price to determine current value
+<span class="fc" id="L85">        double y = 0;</span>
+        // Compare the coes and get the right value of &quot;y&quot;
+<span class="pc bpc" id="L87" title="1 of 4 branches missed.">        if (x &gt; 0 &amp;&amp; x &lt;= 0.5) {</span>
+<span class="fc" id="L88">            y = -0.4 * x + 1;</span>
+<span class="pc bpc" id="L89" title="1 of 4 branches missed.">        } else if (x &gt; 0.5 &amp;&amp; x &lt;= 0.7) {</span>
+<span class="fc" id="L90">            y = x + 0.3;</span>
+<span class="pc bpc" id="L91" title="2 of 4 branches missed.">        } else if (x &gt; 0.7 &amp;&amp; x &lt;= 1) {</span>
+<span class="fc" id="L92">            y = (0.2/Math.PI) * Math.atan(20 * x - 14) + 1;</span>
+        }
+        // Now we can finally start to calculate the ticket price!! ($v$)
+<span class="fc" id="L95">        ticketPrice = y * (getDistance()/100) * (30 + 4 * diff_coe);</span>
+<span class="fc" id="L96">        setTicketPrice(ticketPrice);</span>
+<span class="fc" id="L97">        return ticketPrice;</span>
+    }
+
+    // Setter for ticket price
+    public void setTicketPrice(double ticketPrice) {
+<span class="fc" id="L102">        this.ticketPrice = ticketPrice;</span>
+<span class="fc" id="L103">    }</span>
+
+    //book the given number of passengers onto this flight, returning the total cost
+    public double book(int num) {
+<span class="fc" id="L107">        int counter = num;</span>
+<span class="fc" id="L108">        int num_booked = getNum_of_booked();</span>
+<span class="fc" id="L109">        double price = 0;</span>
+<span class="pc bpc" id="L110" title="1 of 4 branches missed.">        while (counter &gt; 0 &amp;&amp; num_booked &lt;= capacity) {</span>
+            // Add the cost
+<span class="fc" id="L112">            price = price + getTicketPrice();</span>
+            // Increase the number of passengers booked
+<span class="fc" id="L114">            num_booked =num_booked + 1;</span>
+<span class="fc" id="L115">            setNum_of_booked(num_booked);</span>
+<span class="fc" id="L116">            counter = counter - 1;</span>
+        }
+<span class="fc" id="L118">        return price;</span>
+    }
+
+    //get the distance of this flight in km
+    public double getDistance() {
+        // Call the helper function in Location class
+<span class="fc" id="L124">        double f_distance = Location.distance(dep_location, arr_location);</span>
+<span class="fc" id="L125">        return f_distance;</span>
+    }
+
+
+    // Get the days between two flights
+    public static int Days_between(DayOfWeek d1, DayOfWeek d2) {
+        // Calculates the days between to flights
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if(d2.getValue() &lt; d1.getValue()) {</span>
+<span class="fc" id="L133">            return ((d2.getValue() - d1.getValue()) + 7);</span>
+        }
+<span class="fc" id="L135">        return d2.getValue() - d1.getValue();</span>
+    }
+    // Get the days between two flights (For has runway space)
+    public static int between(DayOfWeek d1, DayOfWeek d2) {
+        // Calculates the days between to flights
+<span class="fc bfc" id="L140" title="All 8 branches covered.">        if((d1.getValue() == 7 &amp;&amp; d2.getValue() == 1) || (d1.getValue() == 1 &amp;&amp; d2.getValue() == 7)) {</span>
+<span class="fc" id="L141">            return 1;</span>
+        }
+<span class="fc" id="L143">        return Math.abs(d2.getValue() - d1.getValue());</span>
+    }
+
+    //get the layover time, in minutes, between two flights (for runway space)
+    public static int time_between(LocalTime t1, LocalTime  t2, DayOfWeek d1, DayOfWeek d2) {
+<span class="fc" id="L148">        int layover_time = 0;</span>
+        // Get the days between two flights
+<span class="fc" id="L150">        int days_between = between(d1,d2);</span>
+        // Calculate the amount of layover time (in minutes)
+<span class="fc bfc" id="L152" title="All 4 branches covered.">        if(days_between != 0 &amp;&amp; t2.compareTo(t1) == -1) {</span>
+<span class="fc" id="L153">            return (int) (t1.until(t2, ChronoUnit.MINUTES) + days_between * 24 * 60);</span>
+        }
+<span class="fc bfc" id="L155" title="All 4 branches covered.">        if(days_between != 0 &amp;&amp; t2.compareTo(t1) == 1) {</span>
+<span class="fc" id="L156">            return (int) (-t1.until(t2, ChronoUnit.MINUTES) + days_between * 24 * 60);</span>
+        }
+<span class="fc" id="L158">        layover_time = (int)(Math.abs(t1.until(t2, ChronoUnit.MINUTES)) + days_between * 24 * 60);</span>
+<span class="fc" id="L159">        return layover_time;</span>
+    }
+
+    //get the layover time, in minutes, between two flights (For travel command)
+    public static int layover(Flight x, Flight y) {
+<span class="fc" id="L164">        int layover_time = 0;</span>
+        // Get the days between two flights
+<span class="fc" id="L166">        int days_between = Days_between(Flight.arrival_day_week(x), y.getDep_dayofWeek());</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if(days_between == 0) {</span>
+<span class="fc" id="L168">            layover_time = (int) Flight.arrival_l_time(x).until(y.getDep_local_time(), ChronoUnit.MINUTES);</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            if (layover_time &lt; 0) {</span>
+<span class="fc" id="L170">                return layover_time + 7 * 24 * 60;</span>
+            } else {
+<span class="fc" id="L172">                return (int) Math.abs(layover_time);</span>
+            }
+        }
+        // Calculate the amount of layover time (in minutes)
+<span class="fc" id="L176">        layover_time = (int)(Flight.arrival_l_time(x).until(y.getDep_local_time(), ChronoUnit.MINUTES) + days_between * 24 * 60);</span>
+<span class="fc" id="L177">        return layover_time;</span>
+    }
+    // toString method for export command
+    public String flight_toString() {
+<span class="fc" id="L181">        DateTimeFormatter time_Formatter = DateTimeFormatter.ofPattern(&quot;H:mm&quot;)</span>
+<span class="fc" id="L182">                .withResolverStyle(ResolverStyle.STRICT);</span>
+
+<span class="fc" id="L184">        return dep_dayofWeek.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()) + &quot; &quot; +</span>
+<span class="fc" id="L185">                LocalTime.parse(dep_local_time.toString(), time_Formatter).toString()+ &quot;,&quot;</span>
+<span class="fc" id="L186">                + dep_location.getLocation_name() + &quot;,&quot; + arr_location.getLocation_name()</span>
+                + &quot;,&quot; + capacity + &quot;,&quot; + num_of_booked + &quot;\n&quot;;
+    }
+
+    // The following are the getters &amp; setters for private attributes :)
+
+    // Get the flight ID
+    public int getFlight_id() {
+
+<span class="fc" id="L195">        return flight_id;</span>
+    }
+
+    // Get the departure day of week
+    public DayOfWeek getDep_dayofWeek() {
+
+<span class="fc" id="L201">        return dep_dayofWeek;</span>
+    }
+
+    // Get the departure loacal time
+    public LocalTime getDep_local_time() {
+
+<span class="fc" id="L207">        return dep_local_time;</span>
+    }
+
+    // Get the destination
+    public Location getArr_location() {
+
+<span class="fc" id="L213">        return arr_location;</span>
+    }
+
+    // Get the source
+    public Location getDep_location() {
+
+<span class="fc" id="L219">        return dep_location;</span>
+    }
+
+    // Get the capacity
+    public int getCapacity() {
+
+<span class="fc" id="L225">        return capacity;</span>
+    }
+
+    // Get the number of passengers booked the flight
+    public void setNum_of_booked(int num_of_booked) {
+
+<span class="fc" id="L231">        this.num_of_booked = num_of_booked;</span>
+<span class="fc" id="L232">    }</span>
+
+    public int getNum_of_booked() {
+
+<span class="fc" id="L236">        return num_of_booked;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

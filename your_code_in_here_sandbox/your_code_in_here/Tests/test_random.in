@@ -1,0 +1,7 @@
+location import locations.csv
+flight add sunday 20:00 Berlin NewYork 250
+flight add monday 06:00 newYork berlin 234
+flight add monday 03:51 newYork berlin 234
+flight add monday 03:56 newYork berlin 234
+flight add monday 03:15 newYork berlin 234
+exit

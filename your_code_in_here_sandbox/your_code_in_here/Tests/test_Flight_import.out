@@ -1,0 +1,26 @@
+User: Error reading file.
+
+User: Imported 0 flights.
+182 lines were invalid.
+
+User: Error reading file.
+
+User: Error reading file.
+
+User: Flights
+-------------------------------------------------------
+ID   Departure   Arrival     Source --> Destination
+-------------------------------------------------------
+(None)
+
+User: Usage:
+FLIGHT <id> [BOOK/REMOVE/RESET] [num]
+FLIGHT ADD <departure time> <from> <to> <capacity>
+FLIGHT IMPORT/EXPORT <filename>
+
+User: Imported 51 locations.
+
+User: Imported 169 flights.
+13 lines were invalid.
+
+User: Application closed.

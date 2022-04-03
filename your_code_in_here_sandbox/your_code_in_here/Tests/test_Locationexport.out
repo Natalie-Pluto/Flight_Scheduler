@@ -1,0 +1,25 @@
+User: Usage:
+LOCATION <name>
+LOCATION ADD <name> <latitude> <longitude> <demand_coefficient>
+LOCATION IMPORT/EXPORT <filename>
+
+User: Error reading file.
+
+User: Exported 0 locations.
+
+User: Exported 0 locations.
+
+User: Successfully added location Berlin.
+
+User: Exported 1 location.
+
+User: Successfully added location NewYork.
+
+User: Exported 2 locations.
+
+User: Imported 49 locations.
+2 lines were invalid.
+
+User: Exported 51 locations.
+
+User: Application closed.
